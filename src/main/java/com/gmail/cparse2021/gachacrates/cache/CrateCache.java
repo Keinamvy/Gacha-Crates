@@ -2,7 +2,6 @@ package com.gmail.cparse2021.gachacrates.cache;
 
 import com.gmail.cparse2021.gachacrates.file.CustomFile;
 import com.gmail.cparse2021.gachacrates.struct.crate.Crate;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;

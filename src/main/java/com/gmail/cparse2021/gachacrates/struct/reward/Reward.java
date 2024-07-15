@@ -30,15 +30,14 @@ public class Reward {
         return displayItem;
     }
 
-    public List<ItemStack> getItems() {
-        return items;
-    }
 
     public String getName() {
         return name;
     }
 
-    public Boolean isFeatured() {return featured;}
+    public Boolean isFeatured() {
+        return featured;
+    }
 
     /**
      * Give rewards to player

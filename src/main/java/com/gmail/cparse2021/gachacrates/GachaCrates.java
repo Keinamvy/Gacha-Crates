@@ -16,13 +16,11 @@ import com.gmail.cparse2021.gachacrates.menu.menus.RewardsMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.logging.Level;
 
 public class GachaCrates extends JavaPlugin {
     static GachaCrates instance;
-    private CrateCache crateCache = new CrateCache();
     private final PlayerCache playerCache = new PlayerCache(this);
     private final FileManager fileManager = new FileManager(this);
     private final MenuManager menuManager = new MenuManager();
@@ -31,6 +29,7 @@ public class GachaCrates extends JavaPlugin {
     private final CustomFile dataFile = fileManager.getFile("data");
     private final CustomFile langFile = fileManager.getFile("lang");
     private final CustomFile menusFile = fileManager.getFile("menus");
+    private CrateCache crateCache = new CrateCache();
 
     public static GachaCrates getInstance() {
         return instance;
@@ -47,7 +46,8 @@ public class GachaCrates extends JavaPlugin {
             playerCache.saveTo(fileManager.getFile("data"));
             crateCache.saveTo(fileManager.getFile("crates"));
             Bukkit.getLogger().log(Level.INFO, "[GachaCrate] Saved Data");
-        }, 0L, 12000L);}
+        }, 0L, 12000L);
+    }
 
     @Override
     public void onDisable() {

@@ -61,9 +61,6 @@ public class Crate {
         return rewards;
     }
 
-    public AnimationType getAnimationType() {
-        return animationType;
-    }
 
     public double getChance(RewardTier rewardTier) {
         return rewardProbabilityMap.get(rewardTier);
@@ -169,18 +166,13 @@ public class Crate {
             case NONE -> {
                 for (int i = 0; i < pullCount; i++) {
                     RewardTier rewardTier = crate.generateRewardTier(gachaPlayer);
-                    Reward reward = rewardTier.generateReward(gachaPlayer, crate,  rewardTier);
+                    Reward reward = rewardTier.generateReward(gachaPlayer, crate, rewardTier);
 
                     if (rewardTier.isPityEnabled()) {
                         gachaPlayer.resetPity(crate, rewardTier);
                     }
                     if (rewardTier.isInsuranceEnabled()) {
-                        if (!reward.isFeatured()) {
-                            gachaPlayer.setGuaranteedState(crate,rewardTier,true);
-                        }
-                        else{
-                            gachaPlayer.setGuaranteedState(crate,rewardTier,false);
-                        }
+                        gachaPlayer.setGuaranteedState(crate, rewardTier, !reward.isFeatured());
                     }
                     reward.execute(gachaPlayer.getPlayer());
                     gachaPlayer.increasePity(crate, rewardTier, 1);
@@ -247,12 +239,7 @@ public class Crate {
                             gachaPlayer.resetPity(crate, rewardTier);
                         }
                         if (rewardTier.isInsuranceEnabled()) {
-                            if (!reward.isFeatured()) {
-                                gachaPlayer.setGuaranteedState(crate,rewardTier,true);
-                            }
-                            else{
-                                gachaPlayer.setGuaranteedState(crate,rewardTier,false);
-                            }
+                            gachaPlayer.setGuaranteedState(crate, rewardTier, !reward.isFeatured());
                         }
                         gachaPlayer.increasePity(crate, rewardTier, 1);
                         rewards.put(counter, reward);

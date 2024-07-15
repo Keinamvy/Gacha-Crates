@@ -21,7 +21,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 public class RewardsMenu extends Menu {
@@ -122,7 +121,7 @@ public class RewardsMenu extends Menu {
                 if (l.contains("%pity-list%")) {
                     lore.addAll(getPityList(gachaPlayer, crateSession.getCrate()));
                 } else if (l.contains("%insurance-list%")) {
-                    lore.addAll(getInsuranceList(gachaPlayer,crateSession.getCrate()));
+                    lore.addAll(getInsuranceList(gachaPlayer, crateSession.getCrate()));
                 } else {
                     lore.add(l);
                 }
@@ -218,6 +217,7 @@ public class RewardsMenu extends Menu {
 
         return pityList;
     }
+
     private List<String> getInsuranceList(GachaPlayer gachaPlayer, Crate crate) {
         HashMap<RewardTier, Boolean> guaranteedMap = gachaPlayer.getGuaranteedMap(crate);
         List<String> guaranteedList = new ArrayList<>();
@@ -229,7 +229,7 @@ public class RewardsMenu extends Menu {
 
             guaranteedList.add(Lang.INSURANCE_TRACKER_FORMAT.toString(false)
                     .replace("%reward-tier%", rewardTier.getName())
-                    .replace("%insuranceState%", Boolean.toString(guaranteedMap.getOrDefault(rewardTier,false))));
+                    .replace("%insuranceState%", Boolean.toString(guaranteedMap.getOrDefault(rewardTier, false))));
         }
 
         return guaranteedList;

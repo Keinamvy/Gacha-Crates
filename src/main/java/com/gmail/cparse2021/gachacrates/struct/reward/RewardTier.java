@@ -32,14 +32,13 @@ public class RewardTier {
      *
      * @return Generated RewardTier
      */
-    public Reward generateReward(GachaPlayer player, Crate crate, RewardTier rewardTier ) {
+    public Reward generateReward(GachaPlayer player, Crate crate, RewardTier rewardTier) {
         double randDouble = Math.random();
         double count = 0.0;
 
         for (Map.Entry<Reward, Double> rewardProbability : rewardProbabilityMap.entrySet()) {
-            if (player.getGuaranteedState(crate,rewardTier)){
-                if (!rewardProbability.getKey().isFeatured())
-                {
+            if (player.getGuaranteedState(crate, rewardTier)) {
+                if (!rewardProbability.getKey().isFeatured()) {
                     continue;
                 }
                 Bukkit.getLogger().info("Bảo hiểm kích hoạt");
@@ -77,6 +76,7 @@ public class RewardTier {
     public boolean isInsuranceEnabled() {
         return insuranceEnabled;
     }
+
     public boolean isPityEnabled() {
         return pityEnabled;
     }

@@ -5,15 +5,17 @@ import com.gmail.cparse2021.gachacrates.file.CustomFile;
 import com.gmail.cparse2021.gachacrates.struct.GachaPlayer;
 import com.gmail.cparse2021.gachacrates.struct.crate.Crate;
 import com.gmail.cparse2021.gachacrates.struct.reward.RewardTier;
-import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 public class PlayerCache {
-    private HashMap<UUID, GachaPlayer> playerCache = new HashMap<>();
     private final GachaCrates plugin;
+    private final HashMap<UUID, GachaPlayer> playerCache = new HashMap<>();
     private FileConfiguration fileConfiguration;
 
     public PlayerCache(GachaCrates plugin) {

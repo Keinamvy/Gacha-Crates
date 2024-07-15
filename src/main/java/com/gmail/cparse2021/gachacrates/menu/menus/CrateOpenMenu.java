@@ -74,12 +74,7 @@ public class CrateOpenMenu extends Menu {
                 gachaPlayer.resetPity(crate, rewardTier);
             }
             if (rewardTier.isInsuranceEnabled()) {
-                if (!reward.isFeatured()) {
-                    gachaPlayer.setGuaranteedState(crate,rewardTier,true);
-                }
-                else{
-                    gachaPlayer.setGuaranteedState(crate,rewardTier,false);
-                }
+                gachaPlayer.setGuaranteedState(crate, rewardTier, !reward.isFeatured());
             }
 
             rewards.put(i, reward);

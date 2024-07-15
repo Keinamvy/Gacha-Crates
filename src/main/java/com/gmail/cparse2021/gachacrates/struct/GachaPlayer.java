@@ -28,7 +28,10 @@ public class GachaPlayer {
     public int getAvailablePulls(Crate crate) {
         return pullMap.getOrDefault(crate, 0);
     }
-    public boolean getGuaranteedState(Crate crate, RewardTier rewardTier) { return getGuaranteedMap(crate).getOrDefault(rewardTier, false);}
+
+    public boolean getGuaranteedState(Crate crate, RewardTier rewardTier) {
+        return getGuaranteedMap(crate).getOrDefault(rewardTier, false);
+    }
 
     /**
      * Retrieve the current pity level
@@ -49,6 +52,7 @@ public class GachaPlayer {
     public HashMap<Crate, HashMap<RewardTier, Integer>> getPityMap() {
         return pityMap;
     }
+
     public HashMap<Crate, HashMap<RewardTier, Boolean>> getGuaranteedMap() {
         return guaranteedMap;
     }
@@ -68,6 +72,7 @@ public class GachaPlayer {
 
         return pityMap.get(crate);
     }
+
     @Nonnull
     public HashMap<RewardTier, Boolean> getGuaranteedMap(Crate crate) {
         if (!guaranteedMap.containsKey(crate)) {
@@ -90,22 +95,6 @@ public class GachaPlayer {
     }
 
 
-
-    /**
-     * Increase pity of all pity enabled reward tiers across a crate
-     *
-     * @param crate The crate containing the reward tiers
-     * @param amt   The amount to increase pity by
-     */
-    public void increasePity(Crate crate, int amt) {
-        for (RewardTier rewardTier : crate.getRewardTiers()) {
-            if (!rewardTier.isPityEnabled()) {
-                continue;
-            }
-
-            setPity(crate, rewardTier, Math.min(getPity(crate, rewardTier) + amt, rewardTier.getPityLimit() - 1));
-        }
-    }
 
     /**
      * Increase pity of all pity enabled reward tiers across a crate except for a specific crate
@@ -153,7 +142,8 @@ public class GachaPlayer {
     public void setPity(Crate crate, RewardTier rewardTier, int pityLevel) {
         getPityMap(crate).put(rewardTier, pityLevel);
     }
-    public void setGuaranteedState(Crate crate,RewardTier rewardTier,boolean state) {
+
+    public void setGuaranteedState(Crate crate, RewardTier rewardTier, boolean state) {
         getGuaranteedMap(crate).put(rewardTier, state);
     }
 }
