@@ -15,7 +15,7 @@ public class FileManager {
     /**
      * Get a custom file
      *
-     * @param name The name of the custom file, case insensitive
+     * @param name The name of the custom file, case-insensitive
      * @return An existing customfile if in the cache, or a new customfile
      */
     public CustomFile getFile(String name) {
@@ -41,7 +41,9 @@ public class FileManager {
      * Reload all registered files
      */
     public void reloadAllFiles() {
-        fileHashMap.values().forEach(CustomFile::reloadConfig);
+        for (CustomFile file : fileHashMap.values()) {
+            file.reloadConfig();
+        }
     }
 
     /**

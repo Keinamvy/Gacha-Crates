@@ -15,7 +15,7 @@ import java.util.Set;
 public class CrateCommandExecutor implements CommandExecutor {
     private final Set<CrateCommand> commands = new HashSet<>();
 
-    public void addCommand(CrateCommand crateCommand){
+    public void addCommand(CrateCommand crateCommand) {
         this.commands.add(crateCommand);
     }
 

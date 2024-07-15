@@ -16,6 +16,7 @@ public class Reward {
     private final List<ItemStack> items = new ArrayList<>();
     private final List<String> commands = new ArrayList<>();
     private ItemStack displayItem = new ItemBuilder(Material.AMETHYST_SHARD).setDisplayName("&dReward").build();
+    private boolean featured = false;
 
     public Reward(String name) {
         this.name = name;
@@ -36,6 +37,8 @@ public class Reward {
     public String getName() {
         return name;
     }
+
+    public Boolean isFeatured() {return featured;}
 
     /**
      * Give rewards to player
@@ -62,5 +65,6 @@ public class Reward {
         config.getStringList("Items").forEach((i) -> items.add(Utils.decodeItem(i)));
         commands.addAll(config.getStringList("Commands"));
         displayItem = Utils.decodeItem(config.getString("Display-Item", "AMETHYST_SHARD 1 name:&d" + name));
+        featured = config.getBoolean("Featured");
     }
 }

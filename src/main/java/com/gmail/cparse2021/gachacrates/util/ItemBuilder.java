@@ -66,6 +66,20 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder setCustomModelData(int custommodeldata) {
+        ItemMeta itemMeta = itemStack.getItemMeta();
+
+        if (itemMeta == null) {
+            return this;
+        }
+        if (custommodeldata == 0) {
+            return this;
+        }
+        itemMeta.setCustomModelData(custommodeldata);
+        itemStack.setItemMeta(itemMeta);
+        return this;
+    }
+
     public ItemBuilder setVariables(HashMap<String, String> variableMap) {
         ItemMeta itemMeta = itemStack.getItemMeta();
 

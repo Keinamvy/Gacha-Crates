@@ -4,7 +4,9 @@ import com.gmail.cparse2021.gachacrates.struct.reward.Reward;
 import org.bukkit.Location;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class CrateSession {
     private final UUID playerUuid;
@@ -27,12 +29,24 @@ public class CrateSession {
         return crate;
     }
 
+    public void setCrate(Crate crate) {
+        this.crate = crate;
+    }
+
     public Location getCrateLocation() {
         return crateLocation;
     }
 
+    public void setCrateLocation(Location crateLocation) {
+        this.crateLocation = crateLocation;
+    }
+
     public CrateOpenPhase getOpenPhase() {
         return openPhase;
+    }
+
+    public void setOpenPhase(CrateOpenPhase openPhase) {
+        this.openPhase = openPhase;
     }
 
     public UUID getPlayerUuid() {
@@ -46,18 +60,6 @@ public class CrateSession {
 
     public Collection<Reward> getRewards() {
         return rewards.values();
-    }
-
-    public void setCrate(Crate crate) {
-        this.crate = crate;
-    }
-
-    public void setCrateLocation(Location crateLocation) {
-        this.crateLocation = crateLocation;
-    }
-
-    public void setOpenPhase(CrateOpenPhase openPhase) {
-        this.openPhase = openPhase;
     }
 
     public void setRewards(HashMap<Integer, Reward> rewards) {

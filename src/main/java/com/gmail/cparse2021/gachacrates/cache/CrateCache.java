@@ -2,11 +2,15 @@ package com.gmail.cparse2021.gachacrates.cache;
 
 import com.gmail.cparse2021.gachacrates.file.CustomFile;
 import com.gmail.cparse2021.gachacrates.struct.crate.Crate;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class CrateCache {
     private final List<Crate> crates = new ArrayList<>();
@@ -65,7 +69,6 @@ public class CrateCache {
         for (String crateName : cratesSection.getKeys(false)) {
             Crate crate = new Crate(crateName);
             ConfigurationSection crateSection = cratesSection.getConfigurationSection(crateName);
-
             assert crateSection != null;
             crate.loadFrom(crateSection);
             crates.add(crate);
@@ -88,7 +91,7 @@ public class CrateCache {
 
                 locations.add(location.getWorld().getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ());
             }
-
+            customFile.getConfig().set("Crates." + crate.getName() + ".UUID", crate.getUuid().toString());
             customFile.getConfig().set("Crates." + crate.getName() + ".Locations", locations);
         }
 

@@ -8,9 +8,9 @@ import java.util.List;
 public class MathUtil {
 
     public static Location bezierPoint(float t, Location p0, Location p1, Location p2) {
-        float a = (1-t)*(1-t);
-        float b = 2*(1-t)*t;
-        float c = t*t;
+        float a = (1 - t) * (1 - t);
+        float b = 2 * (1 - t) * t;
+        float c = t * t;
 
         return p0.clone().multiply(a).add(p1.clone().multiply(b)).add(p2.clone().multiply(c));
     }

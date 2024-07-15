@@ -12,6 +12,7 @@ import java.util.UUID;
 public class GachaPlayer {
     private final HashMap<Crate, HashMap<RewardTier, Integer>> pityMap = new HashMap<>();
     private final HashMap<Crate, Integer> pullMap = new HashMap<>();
+    private final HashMap<Crate, HashMap<RewardTier, Boolean>> guaranteedMap = new HashMap<>();
     private final UUID uuid;
 
     public GachaPlayer(UUID uuid) {
@@ -27,11 +28,12 @@ public class GachaPlayer {
     public int getAvailablePulls(Crate crate) {
         return pullMap.getOrDefault(crate, 0);
     }
+    public boolean getGuaranteedState(Crate crate, RewardTier rewardTier) { return getGuaranteedMap(crate).getOrDefault(rewardTier, false);}
 
     /**
      * Retrieve the current pity level
      *
-     * @param crate The Crate to fetch the pity map of
+     * @param crate      The Crate to fetch the pity map of
      * @param rewardTier The RewardTier to get the pity of
      * @return Current pity level as int, defaults to 0
      */
@@ -47,6 +49,10 @@ public class GachaPlayer {
     public HashMap<Crate, HashMap<RewardTier, Integer>> getPityMap() {
         return pityMap;
     }
+    public HashMap<Crate, HashMap<RewardTier, Boolean>> getGuaranteedMap() {
+        return guaranteedMap;
+    }
+
 
     /**
      * Retrieve a specific pity map
@@ -62,6 +68,14 @@ public class GachaPlayer {
 
         return pityMap.get(crate);
     }
+    @Nonnull
+    public HashMap<RewardTier, Boolean> getGuaranteedMap(Crate crate) {
+        if (!guaranteedMap.containsKey(crate)) {
+            guaranteedMap.put(crate, new HashMap<>());
+        }
+
+        return guaranteedMap.get(crate);
+    }
 
     public Player getPlayer() {
         return Bukkit.getPlayer(uuid);
@@ -75,11 +89,13 @@ public class GachaPlayer {
         return uuid;
     }
 
+
+
     /**
      * Increase pity of all pity enabled reward tiers across a crate
      *
      * @param crate The crate containing the reward tiers
-     * @param amt The amount to increase pity by
+     * @param amt   The amount to increase pity by
      */
     public void increasePity(Crate crate, int amt) {
         for (RewardTier rewardTier : crate.getRewardTiers()) {
@@ -94,9 +110,9 @@ public class GachaPlayer {
     /**
      * Increase pity of all pity enabled reward tiers across a crate except for a specific crate
      *
-     * @param crate The crate containing the reward tiers
+     * @param crate     The crate containing the reward tiers
      * @param exception The
-     * @param amt The amount to increase pity by
+     * @param amt       The amount to increase pity by
      */
     public void increasePity(Crate crate, RewardTier exception, int amt) {
         for (RewardTier rewardTier : crate.getRewardTiers()) {
@@ -111,7 +127,7 @@ public class GachaPlayer {
     /**
      * Reset the current pity level to the default value (0)
      *
-     * @param crate The Crate containing the specific pity map
+     * @param crate      The Crate containing the specific pity map
      * @param rewardTier The RewardTier to reset the pity of
      */
     public void resetPity(Crate crate, RewardTier rewardTier) {
@@ -131,10 +147,13 @@ public class GachaPlayer {
     /**
      * Set the current pity level
      *
-     * @param crate The Crate to fetch the pity map of
+     * @param crate      The Crate to fetch the pity map of
      * @param rewardTier The RewardTier to set the pity of
      */
     public void setPity(Crate crate, RewardTier rewardTier, int pityLevel) {
         getPityMap(crate).put(rewardTier, pityLevel);
+    }
+    public void setGuaranteedState(Crate crate,RewardTier rewardTier,boolean state) {
+        getGuaranteedMap(crate).put(rewardTier, state);
     }
 }

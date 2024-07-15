@@ -1,5 +1,7 @@
 package com.gmail.cparse2021.gachacrates.struct.reward;
 
+import com.gmail.cparse2021.gachacrates.struct.GachaPlayer;
+import com.gmail.cparse2021.gachacrates.struct.crate.Crate;
 import com.gmail.cparse2021.gachacrates.util.ItemBuilder;
 import com.gmail.cparse2021.gachacrates.util.Utils;
 import org.bukkit.Bukkit;
@@ -13,10 +15,11 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class RewardTier {
-    private HashMap<Reward, Double> rewardProbabilityMap = new HashMap<>();
     private final String name;
+    private HashMap<Reward, Double> rewardProbabilityMap = new HashMap<>();
     private int pityLimit = 0;
     private boolean pityEnabled = false;
+    private boolean insuranceEnabled = false;
     private ItemStack displayItem = new ItemBuilder(Material.WHITE_STAINED_GLASS_PANE).setDisplayName("&7Reward Tier").build();
     private Color color = Color.SILVER;
 
@@ -29,13 +32,20 @@ public class RewardTier {
      *
      * @return Generated RewardTier
      */
-    public Reward generateReward() {
+    public Reward generateReward(GachaPlayer player, Crate crate, RewardTier rewardTier ) {
         double randDouble = Math.random();
         double count = 0.0;
 
         for (Map.Entry<Reward, Double> rewardProbability : rewardProbabilityMap.entrySet()) {
+            if (player.getGuaranteedState(crate,rewardTier)){
+                if (!rewardProbability.getKey().isFeatured())
+                {
+                    continue;
+                }
+                Bukkit.getLogger().info("Bảo hiểm kích hoạt");
+                return rewardProbability.getKey();
+            }
             count += rewardProbability.getValue();
-
             if (randDouble <= count) {
                 return rewardProbability.getKey();
             }
@@ -64,6 +74,9 @@ public class RewardTier {
         return rewardProbabilityMap.keySet();
     }
 
+    public boolean isInsuranceEnabled() {
+        return insuranceEnabled;
+    }
     public boolean isPityEnabled() {
         return pityEnabled;
     }
@@ -75,7 +88,7 @@ public class RewardTier {
         this.pityLimit = config.getInt("Pity-Limit", 0);
         this.displayItem = Utils.decodeItem(config.getString("Display-Item", "WHITE_STAINED_GLASS_PANE name:&7" + name));
         this.color = Color.fromRGB(config.getInt("Color.R", 255), config.getInt("Color.G", 255), config.getInt("Color.B", 255));
-
+        this.insuranceEnabled = Boolean.parseBoolean(config.getString("Insurance", "false"));
         if (rewards != null) {
             for (String rewardName : rewards.getKeys(false)) {
                 ConfigurationSection rewardsSection = rewards.getConfigurationSection(rewardName);
@@ -89,7 +102,7 @@ public class RewardTier {
 
             sortProbabilityMap();
         } else {
-            Bukkit.getLogger().log(Level.WARNING, "[GachaCrates] No rewards specified for reward tier `" + name + "`");
+            Bukkit.getLogger().log(Level.WARNING, "[GachaCrates] Không có phần thưởng nào được chỉ định cho bậc thưởng `" + name + "`");
         }
     }
 

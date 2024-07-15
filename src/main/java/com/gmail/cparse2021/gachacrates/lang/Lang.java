@@ -24,6 +24,7 @@ public enum Lang {
     ERR_UNKNOWN("err-unknown", "An unknown error has occurred", LangType.NORMAL),
 
     CRATE_CONFIRM_DELETE("crate-confirm-delete", "Confirm deletion of crate &a%crate% &fby breaking again within &a3s", LangType.NORMAL),
+    CRATE_RELOAD("crate-RELOAD", "Reloaded!", LangType.NORMAL),
     CRATE_GIVEN("crate-given", "Gave &a%player% %amount%x %crate% &fpulls", LangType.NORMAL),
     CRATE_GIVEN_TO_ALL("crate-given-to-all", "Gave all online players &a%amount%x %crate% &fpulls", LangType.NORMAL),
     CRATE_RECEIVED("crate-received", "Received &a%amount%x %crate% &fpulls", LangType.NORMAL),
@@ -38,13 +39,13 @@ public enum Lang {
     PITY_TRACKER_FORMAT("pity-tracker-format", "&f  %pity-count%&7/&8%pity-limit% &7%reward-tier%", LangType.NORMAL),
     PULL_LIST_FORMAT("pull-list-format", "&a  %crate%&7: &f%pull-count%", LangType.NORMAL),
     TIER_RATE_FORMAT("tier-rate-format", "&a  %reward-tier% &7%rate%%", LangType.NORMAL),
-
+    INSURANCE_TRACKER_FORMAT("insurance-tracker-format", "&a  %reward-tier%: &7%insuranceState%", LangType.NORMAL),
     PREFIX("prefix", "&2Gacha Crates &8\u00BB &f", LangType.NORMAL);
 
+    private static FileConfiguration fileConfiguration;
     private final String path;
     private final String def;
     private final LangType langType;
-    private static FileConfiguration fileConfiguration;
 
     Lang(String path, LangType langType) {
         this.path = path;
@@ -56,6 +57,10 @@ public enum Lang {
         this.path = path;
         this.def = def;
         this.langType = langType;
+    }
+
+    public static void setFileConfiguration(FileConfiguration fileConfiguration) {
+        Lang.fileConfiguration = fileConfiguration;
     }
 
     public void send(CommandSender sender) {
@@ -93,10 +98,6 @@ public enum Lang {
                 messages.forEach(sender::sendMessage);
             }
         }
-    }
-
-    public static void setFileConfiguration(FileConfiguration fileConfiguration) {
-        Lang.fileConfiguration = fileConfiguration;
     }
 
     public List<String> toStringList() {

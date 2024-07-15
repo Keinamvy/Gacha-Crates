@@ -8,11 +8,11 @@ import java.util.List;
 
 public abstract class CrateCommand {
     private final String label;
-    private String permission = null;
     private final int maxArgs;
     private final int minArgs;
-    private boolean playerOnly = false;
     private final List<String> aliases = new ArrayList<>();
+    private String permission = null;
+    private boolean playerOnly = false;
 
     public CrateCommand(String label, int minArgs, int maxArgs) {
         this.label = label;
@@ -40,6 +40,10 @@ public abstract class CrateCommand {
         return permission;
     }
 
+    public void setPermission(String permission) {
+        this.permission = permission;
+    }
+
     public boolean hasAlias(String str) {
         for (String alias : aliases) {
             if (alias.equalsIgnoreCase(str)) {
@@ -54,13 +58,9 @@ public abstract class CrateCommand {
         return playerOnly;
     }
 
-    public abstract void run(CommandSender sender, String[] args);
-
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
-
     public void setPlayerOnly(boolean playerOnly) {
         this.playerOnly = playerOnly;
     }
+
+    public abstract void run(CommandSender sender, String[] args);
 }

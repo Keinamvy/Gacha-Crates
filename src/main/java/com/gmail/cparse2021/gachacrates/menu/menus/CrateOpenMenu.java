@@ -4,7 +4,7 @@ import com.gmail.cparse2021.gachacrates.GachaCrates;
 import com.gmail.cparse2021.gachacrates.lang.Lang;
 import com.gmail.cparse2021.gachacrates.menu.Menu;
 import com.gmail.cparse2021.gachacrates.menu.MenuManager;
-import com.gmail.cparse2021.gachacrates.struct.*;
+import com.gmail.cparse2021.gachacrates.struct.GachaPlayer;
 import com.gmail.cparse2021.gachacrates.struct.crate.Crate;
 import com.gmail.cparse2021.gachacrates.struct.crate.CrateOpenPhase;
 import com.gmail.cparse2021.gachacrates.struct.crate.CrateSession;
@@ -58,7 +58,7 @@ public class CrateOpenMenu extends Menu {
     }
 
     public void open(GachaPlayer gachaPlayer, CrateSession crateSession, int pullCount) {
-        int rows = Math.min(pullCount % 9 > 0 ? (pullCount / 9) + 1 : pullCount/9, 6);
+        int rows = Math.min(pullCount % 9 > 0 ? (pullCount / 9) + 1 : pullCount / 9, 6);
         Inventory inventory = Bukkit.createInventory(null, rows * 9, title);
         HashMap<Integer, RewardTier> rewardTiers = new HashMap<>();
         HashMap<Integer, Reward> rewards = new HashMap<>();
@@ -68,10 +68,18 @@ public class CrateOpenMenu extends Menu {
         // Generate rewards and set item covers
         for (int i = 0; i < pullCount; i++) {
             RewardTier rewardTier = crate.generateRewardTier(gachaPlayer);
-            Reward reward = rewardTier.generateReward();
+            Reward reward = rewardTier.generateReward(gachaPlayer, crate, rewardTier);
 
             if (rewardTier.isPityEnabled()) {
                 gachaPlayer.resetPity(crate, rewardTier);
+            }
+            if (rewardTier.isInsuranceEnabled()) {
+                if (!reward.isFeatured()) {
+                    gachaPlayer.setGuaranteedState(crate,rewardTier,true);
+                }
+                else{
+                    gachaPlayer.setGuaranteedState(crate,rewardTier,false);
+                }
             }
 
             rewards.put(i, reward);

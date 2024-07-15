@@ -4,9 +4,9 @@ import com.gmail.cparse2021.gachacrates.GachaCrates;
 import com.gmail.cparse2021.gachacrates.lang.Lang;
 import com.gmail.cparse2021.gachacrates.menu.Menu;
 import com.gmail.cparse2021.gachacrates.menu.MenuManager;
+import com.gmail.cparse2021.gachacrates.struct.GachaPlayer;
 import com.gmail.cparse2021.gachacrates.struct.crate.Crate;
 import com.gmail.cparse2021.gachacrates.struct.crate.CrateSession;
-import com.gmail.cparse2021.gachacrates.struct.GachaPlayer;
 import com.gmail.cparse2021.gachacrates.struct.reward.Reward;
 import com.gmail.cparse2021.gachacrates.struct.reward.RewardTier;
 import com.gmail.cparse2021.gachacrates.util.ItemBuilder;
@@ -27,6 +27,7 @@ import java.util.*;
 public class RewardsMenu extends Menu {
     private final GachaCrates plugin;
     private final HashMap<UUID, ItemStack> offhandSnapshotMap = new HashMap<>();
+    private final HashMap<UUID, Integer> pageMap = new HashMap<>();
     private String title = "Rewards Menu";
     private ItemStack backgroundItem = new ItemBuilder(Material.WHITE_STAINED_GLASS_PANE).setDisplayName("&7").build();
     private ItemStack borderItem = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE).setDisplayName("&7").build();
@@ -35,7 +36,6 @@ public class RewardsMenu extends Menu {
     private ItemStack backItem = new ItemBuilder(Material.RED_STAINED_GLASS_PANE).setDisplayName("&cBack").build();
     private ItemStack pityItem = new ItemBuilder(Material.NETHER_STAR).setDisplayName("&ePity Tracker").build();
     private ItemStack rateItem = new ItemBuilder(Material.DARK_OAK_SIGN).setDisplayName("&eReward Tier Rates").build();
-    private final HashMap<UUID, Integer> pageMap = new HashMap<>();
 
     public RewardsMenu(GachaCrates plugin) {
         super("rewards");
@@ -60,8 +60,8 @@ public class RewardsMenu extends Menu {
         backItem = Utils.decodeItem(configurationSection.getString("Back-Item",
                 "RED_STAINED_GLASS_PANE name:&cPrevious_Menu lore:&7Click_to_return_to_the_previous_menu"));
         pityItem = Utils.decodeItem(configurationSection.getString("Pity-Item",
-                "NETHER_STAR name:&e&lPity_Tracker " +
-                        "lore:%pity-list%|&7|&7Each_pull_increases_your_pity_tracker|&7If_you_reach_the_pity_limit,_you're_guaranteed_a_reward"));
+                "NETHER_STAR name:&2Pull_Tracker " +
+                        "lore:&ePity_List|%pity-list%|&bGuaranteed_State_List|%insurance-list%"));
         rateItem = Utils.decodeItem(configurationSection.getString("Rate-Item",
                 "DARK_OAK_SIGN name:&e&lReward_Tier_Rates " +
                         "lore:%rate-list%"));
@@ -121,6 +121,8 @@ public class RewardsMenu extends Menu {
             itemMeta.getLore().forEach((l) -> {
                 if (l.contains("%pity-list%")) {
                     lore.addAll(getPityList(gachaPlayer, crateSession.getCrate()));
+                } else if (l.contains("%insurance-list%")) {
+                    lore.addAll(getInsuranceList(gachaPlayer,crateSession.getCrate()));
                 } else {
                     lore.add(l);
                 }
@@ -216,10 +218,25 @@ public class RewardsMenu extends Menu {
 
         return pityList;
     }
+    private List<String> getInsuranceList(GachaPlayer gachaPlayer, Crate crate) {
+        HashMap<RewardTier, Boolean> guaranteedMap = gachaPlayer.getGuaranteedMap(crate);
+        List<String> guaranteedList = new ArrayList<>();
+
+        for (RewardTier rewardTier : crate.getRewardTiers()) {
+            if (!rewardTier.isInsuranceEnabled()) {
+                continue;
+            }
+
+            guaranteedList.add(Lang.INSURANCE_TRACKER_FORMAT.toString(false)
+                    .replace("%reward-tier%", rewardTier.getName())
+                    .replace("%insuranceState%", Boolean.toString(guaranteedMap.getOrDefault(rewardTier,false))));
+        }
+
+        return guaranteedList;
+    }
 
     private List<String> getRateList(Crate crate) {
         List<String> rateList = new ArrayList<>();
-        DecimalFormat decimalFormat = new DecimalFormat("##.##");
 
         for (RewardTier rewardTier : crate.getRewardTiers()) {
             if (!rewardTier.isPityEnabled()) {
@@ -228,7 +245,7 @@ public class RewardsMenu extends Menu {
 
             rateList.add(Lang.TIER_RATE_FORMAT.toString(false)
                     .replace("%reward-tier%", rewardTier.getName())
-                    .replace("%rate%", decimalFormat.format(crate.getChance(rewardTier))));
+                    .replace("%rate%", String.valueOf(crate.getChance(rewardTier) * 100)));
         }
 
         return rateList;

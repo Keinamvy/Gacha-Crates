@@ -1,25 +1,26 @@
 package com.gmail.cparse2021.gachacrates.util;
 
 import com.gmail.cparse2021.gachacrates.GachaCrates;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 
 public class ParticleUtil {
 
     /**
      * Spawn particles that travel to an end location on a curved path
      *
-     * @param plugin Plugin instance for the BukkitRunnable
-     * @param start Start location
-     * @param end End location
+     * @param plugin   Plugin instance for the BukkitRunnable
+     * @param start    Start location
+     * @param end      End location
      * @param particle The particle to spawn
-     * @param count The amount of particles to spawn per segment
+     * @param count    The amount of particles to spawn per segment
      */
     public static void spawnCurvedLine(GachaCrates plugin, Location start, Location end, Particle particle, int count) {
         Random random = new Random();
@@ -55,13 +56,13 @@ public class ParticleUtil {
     /**
      * Spawn particles that travel to an end location on a curved path
      *
-     * @param plugin Plugin instance for the BukkitRunnable
-     * @param start Start location
-     * @param end End location
+     * @param plugin   Plugin instance for the BukkitRunnable
+     * @param start    Start location
+     * @param end      End location
      * @param particle The particle to spawn
-     * @param count The amount of particles to spawn per segment
+     * @param count    The amount of particles to spawn per segment
      */
-    public static <T>void spawnCurvedLine(GachaCrates plugin, Location start, Location end, Particle particle, T data, int count) {
+    public static <T> void spawnCurvedLine(GachaCrates plugin, Location start, Location end, Particle particle, T data, int count) {
         Random random = new Random();
         boolean negXOffset = random.nextBoolean();
         boolean negZOffset = random.nextBoolean();
@@ -96,7 +97,7 @@ public class ParticleUtil {
         }.runTaskTimer(plugin, 0, 1L);
     }
 
-    public static <T>void spawnCircle(Location start, double radius, Particle particle, T data, int count, boolean hollow) {
+    public static <T> void spawnCircle(Location start, double radius, Particle particle, T data, int count, boolean hollow) {
         List<Location> particleLocations = MathUtil.circle(start, radius, hollow);
 
         for (Location particleLocation : particleLocations) {
@@ -108,7 +109,7 @@ public class ParticleUtil {
         }
     }
 
-    public static <T>void spawnStraightLine(Location start, Location end, Particle particle, T data, int count) {
+    public static <T> void spawnStraightLine(Location start, Location end, Particle particle, T data, int count) {
         Vector dir = end.clone().subtract(start).toVector();
 
         if (start.getWorld() == null) {

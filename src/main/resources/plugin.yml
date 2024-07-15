@@ -1,7 +1,7 @@
 name: GachaCrates
 description: Create unique crates that offer tiered rewards and incentivize crate openings
 version: ${project.version}
-api-version: "1.18"
+api-version: "1.20"
 author: Parse
 main: com.gmail.cparse2021.gachacrates.GachaCrates
 commands:

@@ -2,8 +2,8 @@ package com.gmail.cparse2021.gachacrates.struct.crate;
 
 import com.gmail.cparse2021.gachacrates.GachaCrates;
 import com.gmail.cparse2021.gachacrates.lang.Lang;
-import com.gmail.cparse2021.gachacrates.menu.menus.CrateOpenMenu;
 import com.gmail.cparse2021.gachacrates.menu.Menu;
+import com.gmail.cparse2021.gachacrates.menu.menus.CrateOpenMenu;
 import com.gmail.cparse2021.gachacrates.struct.GachaPlayer;
 import com.gmail.cparse2021.gachacrates.struct.reward.Reward;
 import com.gmail.cparse2021.gachacrates.struct.reward.RewardTier;
@@ -19,10 +19,10 @@ import java.util.logging.Level;
 public class Crate {
     private final LinkedHashMap<RewardTier, Double> rewardProbabilityMap = new LinkedHashMap<>();
     private final String name;
-    private UUID uuid;
-    private AnimationType animationType;
     private final Set<Location> crateLocations = new HashSet<>();
     private final HashMap<Location, Boolean> inUse = new HashMap<>();
+    private UUID uuid;
+    private AnimationType animationType;
 
     public Crate(String name) {
         this.name = name;
@@ -30,23 +30,6 @@ public class Crate {
 
     public void addLocation(Location location) {
         crateLocations.add(location);
-    }
-
-    /**
-     * Generate a random reward tier based on set probability
-     *
-     * @return Generated RewardTier
-     */
-    public RewardTier generateRewardTier() {
-        double randDouble = Math.random();
-
-        for (Map.Entry<RewardTier, Double> rewardProbability : rewardProbabilityMap.entrySet()) {
-            if (randDouble <= rewardProbability.getValue()) {
-                return rewardProbability.getKey();
-            }
-        }
-
-        return rewardProbabilityMap.entrySet().iterator().next().getKey();
     }
 
     /**
@@ -126,13 +109,14 @@ public class Crate {
     public void loadFrom(ConfigurationSection config) {
         ConfigurationSection rewardTiers = config.getConfigurationSection("Reward-Tiers");
 
-        this.uuid = UUID.fromString(config.getString("UUID", UUID.randomUUID().toString()));
+        this.uuid = UUID.fromString(config.getString("UUID", java.util.UUID.randomUUID().toString()));
+
 
         try {
             this.animationType = AnimationType.valueOf(config.getString("Animation-Type", "INTERFACE").toUpperCase());
         } catch (IllegalArgumentException e) {
             this.animationType = AnimationType.INTERFACE;
-            Bukkit.getLogger().log(Level.WARNING, "[GachaCrates] Invalid animation type specified for crate `" + name + "`");
+            Bukkit.getLogger().log(Level.WARNING, "[GachaCrates] Loại hoạt ảnh không hợp lệ được chỉ định cho thùng `" + name + "`");
         }
 
         // Load reward tiers
@@ -149,7 +133,7 @@ public class Crate {
 
             sortProbabilityMap();
         } else {
-            Bukkit.getLogger().log(Level.WARNING, "[GachaCrates] No reward tiers specified for crate `" + name + "`");
+            Bukkit.getLogger().log(Level.WARNING, "[GachaCrates] Không có bậc thưởng nào được chỉ định cho thùng `" + name + "`");
         }
 
         // Load crate locations
@@ -161,7 +145,7 @@ public class Crate {
             int z;
 
             if (world == null) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GachaCrates] Invalid world name specified in crate locations for `" + name + "`: " + locationArgs[0]);
+                Bukkit.getLogger().log(Level.SEVERE, "[GachaCrates] Tên thế giới không hợp lệ được chỉ định tại các vị trí thùng cho `" + name + "`: " + locationArgs[0]);
                 continue;
             }
 
@@ -170,7 +154,7 @@ public class Crate {
                 y = Integer.parseInt(locationArgs[2]);
                 z = Integer.parseInt(locationArgs[3]);
             } catch (IllegalArgumentException e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GachaCrates] Invalid x, y, or z specified in crate locations for `" + name + "`: " + locationString);
+                Bukkit.getLogger().log(Level.SEVERE, "[GachaCrates] Tọa độ x, y, z không hợp lệ cho thùng `" + name + "`: " + locationString);
                 continue;
             }
 
@@ -185,12 +169,19 @@ public class Crate {
             case NONE -> {
                 for (int i = 0; i < pullCount; i++) {
                     RewardTier rewardTier = crate.generateRewardTier(gachaPlayer);
-                    Reward reward = rewardTier.generateReward();
+                    Reward reward = rewardTier.generateReward(gachaPlayer, crate,  rewardTier);
 
                     if (rewardTier.isPityEnabled()) {
                         gachaPlayer.resetPity(crate, rewardTier);
                     }
-
+                    if (rewardTier.isInsuranceEnabled()) {
+                        if (!reward.isFeatured()) {
+                            gachaPlayer.setGuaranteedState(crate,rewardTier,true);
+                        }
+                        else{
+                            gachaPlayer.setGuaranteedState(crate,rewardTier,false);
+                        }
+                    }
                     reward.execute(gachaPlayer.getPlayer());
                     gachaPlayer.increasePity(crate, rewardTier, 1);
                 }
@@ -246,7 +237,7 @@ public class Crate {
                             return;
                         }
                         RewardTier rewardTier = crate.generateRewardTier(gachaPlayer);
-                        Reward reward = rewardTier.generateReward();
+                        Reward reward = rewardTier.generateReward(gachaPlayer, crate, rewardTier);
                         Particle.DustOptions dustOptions = new Particle.DustOptions(rewardTier.getColor(), 1);
                         double xOffset = new Random().nextDouble(0.4 + (counter * .15)) * (new Random().nextBoolean() ? -1 : 1);
                         double zOffset = new Random().nextDouble(0.4 + (counter * .15)) * (new Random().nextBoolean() ? -1 : 1);
@@ -255,7 +246,14 @@ public class Crate {
                         if (rewardTier.isPityEnabled()) {
                             gachaPlayer.resetPity(crate, rewardTier);
                         }
-
+                        if (rewardTier.isInsuranceEnabled()) {
+                            if (!reward.isFeatured()) {
+                                gachaPlayer.setGuaranteedState(crate,rewardTier,true);
+                            }
+                            else{
+                                gachaPlayer.setGuaranteedState(crate,rewardTier,false);
+                            }
+                        }
                         gachaPlayer.increasePity(crate, rewardTier, 1);
                         rewards.put(counter, reward);
                         rewardTiers.put(counter, rewardTier);
@@ -267,10 +265,10 @@ public class Crate {
                 }.runTaskTimer(plugin, 0, 7);
 
                 new BukkitRunnable() {
-                    int counter = 1;
                     final Location cloudLoc = particleStartLoc.clone().add(0, 1.5, 0);
                     final List<Location> particleLocations = MathUtil.circle(cloudLoc, 0.5, false);
                     final Particle.DustOptions dustOptions = new Particle.DustOptions(Color.SILVER, 1);
+                    int counter = 1;
 
                     @Override
                     public void run() {
