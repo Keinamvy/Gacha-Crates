@@ -12,44 +12,28 @@ public class FileManager {
         this.plugin = plugin;
     }
 
-    /**
-     * Get a custom file
-     *
-     * @param name The name of the custom file, case-insensitive
-     * @return An existing customfile if in the cache, or a new customfile
-     */
     public CustomFile getFile(String name) {
         CustomFile customFile = null;
 
-        for (String key : fileHashMap.keySet()) {
-            if (!key.equalsIgnoreCase(name)) {
-                continue;
+        for (String key : this.fileHashMap.keySet()) {
+            if (key.equalsIgnoreCase(name)) {
+                customFile = this.fileHashMap.get(name);
             }
-
-            customFile = fileHashMap.get(name);
         }
 
         if (customFile == null) {
-            customFile = new CustomFile(plugin, name);
-            fileHashMap.put(name, customFile);
+            customFile = new CustomFile(this.plugin, name);
+            this.fileHashMap.put(name, customFile);
         }
 
         return customFile;
     }
 
-    /**
-     * Reload all registered files
-     */
     public void reloadAllFiles() {
-        for (CustomFile file : fileHashMap.values()) {
-            file.reloadConfig();
-        }
+        this.fileHashMap.values().forEach(CustomFile::reloadConfig);
     }
 
-    /**
-     * Save all registered files
-     */
     public void saveAllFiles() {
-        fileHashMap.values().forEach(CustomFile::saveConfig);
+        this.fileHashMap.values().forEach(CustomFile::saveConfig);
     }
 }

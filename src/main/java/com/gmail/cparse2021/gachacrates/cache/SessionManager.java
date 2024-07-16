@@ -10,15 +10,15 @@ public class SessionManager {
     private final HashMap<UUID, CrateSession> crateSessions = new HashMap<>();
 
     public void clearSession(UUID playerUuid) {
-        crateSessions.remove(playerUuid);
+        this.crateSessions.remove(playerUuid);
     }
 
     @Nullable
     public CrateSession getCrateSession(UUID playerUuid) {
-        return crateSessions.get(playerUuid);
+        return this.crateSessions.get(playerUuid);
     }
 
     public void registerSession(CrateSession crateSession) {
-        crateSessions.put(crateSession.getPlayerUuid(), crateSession);
+        this.crateSessions.put(crateSession.getPlayerUuid(), crateSession);
     }
 }

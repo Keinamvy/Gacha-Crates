@@ -21,43 +21,44 @@ public class CustomFile {
     }
 
     public FileConfiguration getConfig() {
-        if (configFile == null) {
-            reloadConfig();
+        if (this.configFile == null) {
+            this.reloadConfig();
         }
-        return configFile;
+
+        return this.configFile;
     }
 
     public void reloadConfig() {
-        if (configFile == null) {
-            file = new File(plugin.getDataFolder(), fileName + ".yml");
+        if (this.configFile == null) {
+            this.file = new File(this.plugin.getDataFolder(), this.fileName + ".yml");
         }
-        configFile = YamlConfiguration.loadConfiguration(file);
-        InputStream inputStream = plugin.getResource(fileName + ".yml");
 
+        this.configFile = YamlConfiguration.loadConfiguration(this.file);
+        InputStream inputStream = this.plugin.getResource(this.fileName + ".yml");
         if (inputStream != null) {
             Reader defConfigStream = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-            configFile.setDefaults(defConfig);
+            this.configFile.setDefaults(defConfig);
         }
     }
 
     public void saveConfig() {
-        if (configFile == null || file == null) {
-            return;
-        }
-        try {
-            getConfig().save(file);
-        } catch (IOException ex) {
-            Bukkit.getLogger().log(Level.SEVERE, "Could not save config to " + configFile);
+        if (this.configFile != null && this.file != null) {
+            try {
+                this.getConfig().save(this.file);
+            } catch (IOException var2) {
+                Bukkit.getLogger().log(Level.SEVERE, "Could not save config to " + this.configFile);
+            }
         }
     }
 
     public void saveDefaultConfig() {
-        if (file == null) {
-            file = new File(plugin.getDataFolder(), fileName + ".yml");
+        if (this.file == null) {
+            this.file = new File(this.plugin.getDataFolder(), this.fileName + ".yml");
         }
-        if (!file.exists()) {
-            plugin.saveResource(fileName + ".yml", false);
+
+        if (!this.file.exists()) {
+            this.plugin.saveResource(this.fileName + ".yml", false);
         }
     }
 }

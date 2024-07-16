@@ -37,92 +37,80 @@ public class CrateMenu extends Menu {
 
     @Override
     public void load(ConfigurationSection configurationSection) {
-        if (configurationSection == null) {
-            return;
+        if (configurationSection != null) {
+            this.title = Utils.formatString(configurationSection.getString("Title"));
+            this.backgroundItem = Utils.decodeItem(configurationSection.getString("Background-Item", "WHITE_STAINED_GLASS_PANE name:&7"));
+            this.pullItem = Utils.decodeItem(
+                    configurationSection.getString("Pull-Menu-Item", "NETHER_STAR name:&e&lPull lore:&f&l%pull-count%_&7pulls_remaining|&7Click_to_&f&lpull")
+            );
+            this.rewardsItem = Utils.decodeItem(
+                    configurationSection.getString("Rewards-Menu-Item", "AMETHYST_CLUSTER name:&e&lRewards lore:&7Click_to_view_&frewards_&7and_your_&fpity_tracker")
+            );
         }
-
-        title = Utils.formatString(configurationSection.getString("Title"));
-        backgroundItem = Utils.decodeItem(configurationSection.getString("Background-Item",
-                "WHITE_STAINED_GLASS_PANE name:&7"));
-        pullItem = Utils.decodeItem(configurationSection.getString("Pull-Menu-Item",
-                "NETHER_STAR name:&e&lPull lore:&f&l%pull-count%_&7pulls_remaining|&7Click_to_&f&lpull"));
-        rewardsItem = Utils.decodeItem(configurationSection.getString("Rewards-Menu-Item",
-                "AMETHYST_CLUSTER name:&e&lRewards lore:&7Click_to_view_&frewards_&7and_your_&fpity_tracker"));
     }
 
     @Override
     public void open(Player player) {
-        CrateSession crateSession = plugin.getSessionManager().getCrateSession(player.getUniqueId());
-
+        CrateSession crateSession = this.plugin.getSessionManager().getCrateSession(player.getUniqueId());
         if (crateSession == null) {
             Lang.ERR_UNKNOWN.send(player);
-            return;
-        }
-        Crate crate = crateSession.getCrate();
-        GachaPlayer gachaPlayer = plugin.getPlayerCache().getPlayer(player.getUniqueId());
-        Inventory inventory = Bukkit.createInventory(null, 27, title.replace("%crate%", crate.getName()));
-        HashMap<String, String> variables = new HashMap<>();
+        } else {
+            Crate crate = crateSession.getCrate();
+            GachaPlayer gachaPlayer = this.plugin.getPlayerCache().getPlayer(player.getUniqueId());
+            Inventory inventory = Bukkit.createInventory(null, 27, this.title.replace("%crate%", crate.getName()));
+            HashMap<String, String> variables = new HashMap<>();
 
-        for (int i = 0; i < inventory.getSize(); i++) {
-            inventory.setItem(i, backgroundItem);
-        }
+            for (int i = 0; i < inventory.getSize(); i++) {
+                inventory.setItem(i, this.backgroundItem);
+            }
 
-        variables.put("%pull-count%", Integer.toString(gachaPlayer.getAvailablePulls(crate)));
-        inventory.setItem(11, new ItemBuilder(pullItem.clone()).setVariables(variables).build());
-        inventory.setItem(15, rewardsItem);
-        offhandSnapshotMap.put(player.getUniqueId(), player.getInventory().getItemInOffHand());
-        player.openInventory(inventory);
-        plugin.getMenuManager().setActiveMenu(player.getUniqueId(), this);
+            variables.put("%pull-count%", Integer.toString(gachaPlayer.getAvailablePulls(crate)));
+            inventory.setItem(11, new ItemBuilder(this.pullItem.clone()).setVariables(variables).build());
+            inventory.setItem(15, this.rewardsItem);
+            this.offhandSnapshotMap.put(player.getUniqueId(), player.getInventory().getItemInOffHand());
+            player.openInventory(inventory);
+            this.plugin.getMenuManager().setActiveMenu(player.getUniqueId(), this);
+        }
     }
 
     @Override
     public void processClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
-        MenuManager menuManager = plugin.getMenuManager();
-        CrateSession crateSession = plugin.getSessionManager().getCrateSession(player.getUniqueId());
+        MenuManager menuManager = this.plugin.getMenuManager();
+        CrateSession crateSession = this.plugin.getSessionManager().getCrateSession(player.getUniqueId());
         Optional<Menu> pullMenu = menuManager.getMenu("pull");
         Optional<Menu> rewardsMenu = menuManager.getMenu("rewards");
-
         if (crateSession == null) {
             player.closeInventory();
             Lang.ERR_UNKNOWN.send(player);
-            return;
-        }
-
-        if (menuManager.isOnCooldown(player.getUniqueId())) {
-            return;
-        } else {
+        } else if (!menuManager.isOnCooldown(player.getUniqueId())) {
             menuManager.addCooldown(player.getUniqueId());
-        }
+            if (e.getSlot() == 11) {
+                if (pullMenu.isEmpty()) {
+                    player.closeInventory();
+                } else {
+                    pullMenu.get().open(player);
+                }
+            } else {
+                if (e.getSlot() == 15) {
+                    if (rewardsMenu.isEmpty()) {
+                        player.closeInventory();
+                        return;
+                    }
 
-        if (e.getSlot() == 11) {
-            if (pullMenu.isEmpty()) {
-                player.closeInventory();
-                return;
+                    rewardsMenu.get().open(player);
+                }
             }
-
-            pullMenu.get().open(player);
-            return;
-        }
-
-        if (e.getSlot() == 15) {
-            if (rewardsMenu.isEmpty()) {
-                player.closeInventory();
-                return;
-            }
-
-            rewardsMenu.get().open(player);
         }
     }
 
     @Override
     public void processClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
-
-        if (offhandSnapshotMap.containsKey(player.getUniqueId())) {
+        if (this.offhandSnapshotMap.containsKey(player.getUniqueId())) {
             player.getInventory().setItemInOffHand(player.getInventory().getItemInOffHand());
         }
 
-        plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
+        this.plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
     }
 }

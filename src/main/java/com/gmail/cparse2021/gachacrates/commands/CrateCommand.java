@@ -8,11 +8,11 @@ import java.util.List;
 
 public abstract class CrateCommand {
     private final String label;
+    private String permission = null;
     private final int maxArgs;
     private final int minArgs;
-    private final List<String> aliases = new ArrayList<>();
-    private String permission = null;
     private boolean playerOnly = false;
+    private final List<String> aliases = new ArrayList<>();
 
     public CrateCommand(String label, int minArgs, int maxArgs) {
         this.label = label;
@@ -25,42 +25,42 @@ public abstract class CrateCommand {
     }
 
     public String getLabel() {
-        return label;
+        return this.label;
     }
 
     public int getMaxArgs() {
-        return maxArgs;
+        return this.maxArgs;
     }
 
     public int getMinArgs() {
-        return minArgs;
+        return this.minArgs;
     }
 
     public String getPermission() {
-        return permission;
-    }
-
-    public void setPermission(String permission) {
-        this.permission = permission;
+        return this.permission;
     }
 
     public boolean hasAlias(String str) {
-        for (String alias : aliases) {
+        for (String alias : this.aliases) {
             if (alias.equalsIgnoreCase(str)) {
                 return true;
             }
         }
 
-        return label.equalsIgnoreCase(str);
+        return this.label.equalsIgnoreCase(str);
     }
 
     public boolean isPlayerOnly() {
-        return playerOnly;
+        return this.playerOnly;
+    }
+
+    public abstract void run(CommandSender var1, String[] var2);
+
+    public void setPermission(String permission) {
+        this.permission = permission;
     }
 
     public void setPlayerOnly(boolean playerOnly) {
         this.playerOnly = playerOnly;
     }
-
-    public abstract void run(CommandSender sender, String[] args);
 }

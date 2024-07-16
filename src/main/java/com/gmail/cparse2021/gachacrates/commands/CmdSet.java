@@ -15,38 +15,30 @@ public class CmdSet extends CrateCommand {
 
     public CmdSet(GachaCrates plugin) {
         super("set", 1, 1);
-        setPermission("gachacrates.admin");
-        setPlayerOnly(true);
-
+        this.setPermission("gachacrates.admin");
+        this.setPlayerOnly(true);
         this.plugin = plugin;
     }
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        Optional<Crate> crate = plugin.getCrateCache().getCrate(args[0]);
+        Optional<Crate> crate = this.plugin.getCrateCache().getCrate(args[0]);
         HashMap<String, String> replacements = new HashMap<>();
         Player player = (Player) sender;
-
         if (crate.isEmpty()) {
             replacements.put("%crate%", args[0]);
             Lang.ERR_UNKNOWN_CRATE.send(player, replacements);
-            return;
         } else {
             replacements.put("%crate%", crate.get().getName());
+            Block targetBlock = player.getTargetBlock(null, 5);
+            if (targetBlock.isEmpty()) {
+                Lang.ERR_NO_BLOCK.send(player);
+            } else if (this.plugin.getCrateCache().getCrate(targetBlock.getLocation()).isPresent()) {
+                Lang.ERR_ALREADY_CRATE.send(player);
+            } else {
+                crate.get().addLocation(targetBlock.getLocation());
+                Lang.CRATE_LOCATION_ADDED.send(player, replacements);
+            }
         }
-        Block targetBlock = player.getTargetBlock(null, 5);
-
-        if (targetBlock.isEmpty()) {
-            Lang.ERR_NO_BLOCK.send(player);
-            return;
-        }
-
-        if (plugin.getCrateCache().getCrate(targetBlock.getLocation()).isPresent()) {
-            Lang.ERR_ALREADY_CRATE.send(player);
-            return;
-        }
-
-        crate.get().addLocation(targetBlock.getLocation());
-        Lang.CRATE_LOCATION_ADDED.send(player, replacements);
     }
 }

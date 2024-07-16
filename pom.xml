@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.gmail.cparse2021</groupId>
     <artifactId>gacha-crates</artifactId>
-    <version>1.0.1-Keinamvy-Translated</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <repositories>
         <repository>
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20.1-R0.1-SNAPSHOT</version>
+            <version>1.20.4-R0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

@@ -42,143 +42,118 @@ public class CrateOpenMenu extends Menu {
 
     @Override
     public void load(@Nullable ConfigurationSection configurationSection) {
-        if (configurationSection == null) {
-            return;
+        if (configurationSection != null) {
+            this.title = Utils.formatString(configurationSection.getString("Title", "&6&lPull Rewards"));
+            this.countdownItem1 = Utils.decodeItem(configurationSection.getString("Countdown-Item-1", "GRAY_STAINED_GLASS_PANE name:&7Revealing_in_1s"));
+            this.countdownItem2 = Utils.decodeItem(configurationSection.getString("Countdown-Item-2", "YELLOW_STAINED_GLASS_PANE name:&7Revealing_in_2s"));
+            this.countdownItem3 = Utils.decodeItem(configurationSection.getString("Countdown-Item-3", "ORANGE_STAINED_GLASS_PANE name:&7Revealing_in_3s"));
         }
-
-        title = Utils.formatString(configurationSection.getString("Title", "&6&lPull Rewards"));
-        countdownItem1 = Utils.decodeItem(configurationSection.getString("Countdown-Item-1", "GRAY_STAINED_GLASS_PANE name:&7Revealing_in_1s"));
-        countdownItem2 = Utils.decodeItem(configurationSection.getString("Countdown-Item-2", "YELLOW_STAINED_GLASS_PANE name:&7Revealing_in_2s"));
-        countdownItem3 = Utils.decodeItem(configurationSection.getString("Countdown-Item-3", "ORANGE_STAINED_GLASS_PANE name:&7Revealing_in_3s"));
     }
 
     @Override
     public void open(Player player) {
-
     }
 
-    public void open(GachaPlayer gachaPlayer, CrateSession crateSession, int pullCount) {
-        int rows = Math.min(pullCount % 9 > 0 ? (pullCount / 9) + 1 : pullCount / 9, 6);
-        Inventory inventory = Bukkit.createInventory(null, rows * 9, title);
-        HashMap<Integer, RewardTier> rewardTiers = new HashMap<>();
+    public void open(GachaPlayer gachaPlayer, final CrateSession crateSession, int pullCount) {
+        int rows = Math.min(pullCount % 9 > 0 ? pullCount / 9 + 1 : pullCount / 9, 6);
+        final Inventory inventory = Bukkit.createInventory(null, rows * 9, this.title);
+        final HashMap<Integer, RewardTier> rewardTiers = new HashMap<>();
         HashMap<Integer, Reward> rewards = new HashMap<>();
         Crate crate = crateSession.getCrate();
-        Player player = gachaPlayer.getPlayer();
+        final Player player = gachaPlayer.getPlayer();
 
-        // Generate rewards and set item covers
         for (int i = 0; i < pullCount; i++) {
             RewardTier rewardTier = crate.generateRewardTier(gachaPlayer);
             Reward reward = rewardTier.generateReward(gachaPlayer, crate, rewardTier);
+            if (rewardTier.isInsuranceEnabled()) {
+                gachaPlayer.setGuaranteeState(crate, rewardTier, reward.isFeatured());
+            }
 
             if (rewardTier.isPityEnabled()) {
                 gachaPlayer.resetPity(crate, rewardTier);
-            }
-            if (rewardTier.isInsuranceEnabled()) {
-                gachaPlayer.setGuaranteedState(crate, rewardTier, !reward.isFeatured());
             }
 
             rewards.put(i, reward);
             rewardTiers.put(i, rewardTier);
             gachaPlayer.increasePity(crate, rewardTier, 1);
-            inventory.setItem(i, countdownItem3);
+            inventory.setItem(i, this.countdownItem3);
         }
 
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            for (int i = 0; i < pullCount; i++) {
-                inventory.setItem(i, countdownItem2);
+        Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+            for (int ix = 0; ix < pullCount; ix++) {
+                inventory.setItem(ix, this.countdownItem2);
             }
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
+
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F);
         }, 20L);
-
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            for (int i = 0; i < pullCount; i++) {
-                inventory.setItem(i, countdownItem1);
+        Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+            for (int ix = 0; ix < pullCount; ix++) {
+                inventory.setItem(ix, this.countdownItem1);
             }
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
-        }, 40L);
 
-        new BukkitRunnable() {
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F);
+        }, 40L);
+        (new BukkitRunnable() {
             int counter = 0;
 
-            @Override
             public void run() {
-                RewardTier rewardTier = rewardTiers.get(counter);
-
+                RewardTier rewardTier = rewardTiers.get(this.counter);
                 if (rewardTier == null) {
                     crateSession.setOpenPhase(CrateOpenPhase.COMPLETE);
-                    cancel();
-                    return;
+                    this.cancel();
+                } else {
+                    inventory.setItem(this.counter++, rewardTier.getDisplayItem());
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.7F, 0.7F);
                 }
-
-                inventory.setItem(counter++, rewardTier.getDisplayItem());
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, .7f, .7f);
             }
-        }.runTaskTimer(plugin, 60L, 7L);
-
-
+        }).runTaskTimer(this.plugin, 60L, 7L);
         crateSession.setRewards(rewards);
         crateSession.setOpenPhase(CrateOpenPhase.OPENING);
-        offhandSnapshotMap.put(player.getUniqueId(), player.getInventory().getItemInOffHand());
+        this.offhandSnapshotMap.put(player.getUniqueId(), player.getInventory().getItemInOffHand());
         player.openInventory(inventory);
-        plugin.getMenuManager().setActiveMenu(player.getUniqueId(), this);
+        this.plugin.getMenuManager().setActiveMenu(player.getUniqueId(), this);
     }
 
     @Override
     public void processClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
-        CrateSession crateSession = plugin.getSessionManager().getCrateSession(player.getUniqueId());
-        MenuManager menuManager = plugin.getMenuManager();
-
+        CrateSession crateSession = this.plugin.getSessionManager().getCrateSession(player.getUniqueId());
+        MenuManager menuManager = this.plugin.getMenuManager();
         if (crateSession == null) {
             player.closeInventory();
             Lang.ERR_UNKNOWN.send(player);
-            plugin.getSessionManager().clearSession(player.getUniqueId());
-            plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
-            return;
-        }
-
-        if (menuManager.isOnCooldown(player.getUniqueId())) {
-            return;
-        } else {
+            this.plugin.getSessionManager().clearSession(player.getUniqueId());
+            this.plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
+        } else if (!menuManager.isOnCooldown(player.getUniqueId())) {
             menuManager.addCooldown(player.getUniqueId());
+            if (crateSession.getOpenPhase() == CrateOpenPhase.COMPLETE && e.getCurrentItem() != null) {
+                Reward reward = crateSession.getReward(e.getSlot());
+                if (reward != null) {
+                    player.getOpenInventory().getTopInventory().setItem(e.getSlot(), reward.getDisplayItem());
+                }
+            }
         }
-
-        if (crateSession.getOpenPhase() != CrateOpenPhase.COMPLETE || e.getCurrentItem() == null) {
-            return;
-        }
-        Reward reward = crateSession.getReward(e.getSlot());
-
-        if (reward == null) {
-            return;
-        }
-
-        player.getOpenInventory().getTopInventory().setItem(e.getSlot(), reward.getDisplayItem());
     }
 
     @Override
     public void processClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
-        CrateSession crateSession = plugin.getSessionManager().getCrateSession(player.getUniqueId());
-
-        if (offhandSnapshotMap.containsKey(player.getUniqueId())) {
+        CrateSession crateSession = this.plugin.getSessionManager().getCrateSession(player.getUniqueId());
+        if (this.offhandSnapshotMap.containsKey(player.getUniqueId())) {
             player.getInventory().setItemInOffHand(player.getInventory().getItemInOffHand());
         }
 
         if (crateSession == null) {
-            plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
-            return;
-        }
-
-        if (crateSession.getOpenPhase() == CrateOpenPhase.OPENING) {
+            this.plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
+        } else if (crateSession.getOpenPhase() == CrateOpenPhase.OPENING) {
             player.openInventory(e.getInventory());
-            return;
-        }
+        } else {
+            for (Reward reward : crateSession.getRewards()) {
+                reward.execute(player);
+            }
 
-        for (Reward reward : crateSession.getRewards()) {
-            reward.execute(player);
+            this.plugin.getSessionManager().clearSession(player.getUniqueId());
+            this.plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
         }
-
-        plugin.getSessionManager().clearSession(player.getUniqueId());
-        plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
     }
 }

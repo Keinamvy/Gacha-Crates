@@ -12,8 +12,7 @@ public class CmdList extends CrateCommand {
 
     public CmdList(GachaCrates plugin) {
         super("list", 0, 0);
-        setPermission("gachacrates.admin");
-
+        this.setPermission("gachacrates.admin");
         this.plugin = plugin;
     }
 
@@ -21,8 +20,7 @@ public class CmdList extends CrateCommand {
     public void run(CommandSender sender, String[] args) {
         StringJoiner listJoiner = new StringJoiner(", ");
         HashMap<String, String> replacements = new HashMap<>();
-
-        plugin.getCrateCache().getCrates().forEach(c -> listJoiner.add(c.getName()));
+        this.plugin.getCrateCache().getCrates().forEach(c -> listJoiner.add(c.getName()));
         replacements.put("%list%", listJoiner.toString());
         Lang.CRATE_LIST.send(sender, replacements);
     }

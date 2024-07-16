@@ -17,103 +17,76 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.logging.Level;
-
 public class GachaCrates extends JavaPlugin {
-    static GachaCrates instance;
-    private final PlayerCache playerCache = new PlayerCache(this);
+    private CrateCache crateCache;
+    private PlayerCache playerCache;
     private final FileManager fileManager = new FileManager(this);
     private final MenuManager menuManager = new MenuManager();
     private final SessionManager sessionManager = new SessionManager();
-    private final CustomFile cratesFile = fileManager.getFile("crates");
-    private final CustomFile dataFile = fileManager.getFile("data");
-    private final CustomFile langFile = fileManager.getFile("lang");
-    private final CustomFile menusFile = fileManager.getFile("menus");
-    private CrateCache crateCache = new CrateCache();
+    private final CustomFile cratesFile = this.fileManager.getFile("crates");
+    private final CustomFile dataFile = this.fileManager.getFile("data");
+    private final CustomFile langFile = this.fileManager.getFile("lang");
+    private final CustomFile menusFile = this.fileManager.getFile("menus");
 
-    public static GachaCrates getInstance() {
-        return instance;
-    }
-
-    @Override
     public void onEnable() {
-        instance = this;
-        registerConfig();
-        registerCommands();
-        registerListeners();
-        registerMenus();
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            playerCache.saveTo(fileManager.getFile("data"));
-            crateCache.saveTo(fileManager.getFile("crates"));
-            Bukkit.getLogger().log(Level.INFO, "[GachaCrate] Saved Data");
-        }, 0L, 12000L);
+        this.registerConfig();
+        this.registerCommands();
+        this.registerListeners();
+        this.registerMenus();
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, this::saveData, 0L, 12000L);
     }
 
-    @Override
     public void onDisable() {
-        playerCache.saveTo(fileManager.getFile("data"));
-        crateCache.saveTo(fileManager.getFile("crates"));
+        this.saveData();
     }
 
-    /**
-     * Retrieve the crate cache, used for managing crates cached in memory
-     *
-     * @return CrateCache
-     */
     public CrateCache getCrateCache() {
-        return crateCache;
+        return this.crateCache;
     }
 
-    /**
-     * Retrieve the menu manager, used for tracking active menus and finding menus
-     *
-     * @return MenuManager
-     */
     public MenuManager getMenuManager() {
-        return menuManager;
+        return this.menuManager;
     }
 
-    /**
-     * Retrieve the player cache, used for retrieving GachaPlayers
-     *
-     * @return PlayerCache
-     */
     public PlayerCache getPlayerCache() {
-        return playerCache;
+        return this.playerCache;
     }
 
-    /**
-     * Retrieve the session manager, used for holding info regarding active crates
-     *
-     * @return SessionManager
-     */
     public SessionManager getSessionManager() {
-        return sessionManager;
+        return this.sessionManager;
     }
 
     private void registerCommands() {
-        PluginCommand crateCommand = getCommand("crate");
-        CrateCommandExecutor commandExecutor = new CrateCommandExecutor();
-
-        commandExecutor.addCommands(new CmdSet(this), new CmdRemove(this), new CmdGive(this), new CmdTake(this),
-                new CmdGiveAll(this), new CmdList(this), new CmdCheck(this), new CmdReload(this));
+        PluginCommand crateCommand = this.getCommand("crate");
+        CrateCommandExecutor commandExecutor = new CrateCommandExecutor(this);
+        commandExecutor.addCommands(
+                new CmdSet(this),
+                new CmdRemove(this),
+                new CmdGive(this),
+                new CmdTake(this),
+                new CmdGiveAll(this),
+                new CmdList(this),
+                new CmdCheck(this),
+                new CmdReload(this)
+        );
         if (crateCommand != null) {
             crateCommand.setExecutor(commandExecutor);
         }
     }
 
     private void registerConfig() {
-        saveDefaultConfig();
-        cratesFile.saveDefaultConfig();
-        dataFile.saveDefaultConfig();
-        langFile.saveDefaultConfig();
-        menusFile.saveDefaultConfig();
-
-        GachaConfig.load(getConfig());
-        GachaConfig.validateConfig(ConfigType.MENUS, menusFile);
-        crateCache.loadFrom(cratesFile.getConfig());
-        playerCache.setFile(dataFile.getConfig());
-        Lang.setFileConfiguration(langFile.getConfig());
+        this.saveDefaultConfig();
+        this.cratesFile.saveDefaultConfig();
+        this.dataFile.saveDefaultConfig();
+        this.langFile.saveDefaultConfig();
+        this.menusFile.saveDefaultConfig();
+        GachaConfig.load(this.getConfig());
+        GachaConfig.validateConfig(ConfigType.MENUS, this.menusFile);
+        this.crateCache = new CrateCache();
+        this.crateCache.loadFrom(this.cratesFile.getConfig());
+        this.playerCache = new PlayerCache(this);
+        this.playerCache.setFile(this.dataFile.getConfig());
+        Lang.setFileConfiguration(this.langFile.getConfig());
     }
 
     private void registerListeners() {
@@ -123,30 +96,33 @@ public class GachaCrates extends JavaPlugin {
     }
 
     private void registerMenus() {
-        CustomFile menusFile = fileManager.getFile("menus");
         CrateMenu crateMenu = new CrateMenu(this);
         PullMenu pullMenu = new PullMenu(this);
         RewardsMenu rewardsMenu = new RewardsMenu(this);
         CrateOpenMenu crateOpenMenu = new CrateOpenMenu(this);
-
-        crateMenu.load(menusFile.getConfig().getConfigurationSection("Crate-Menu"));
-        pullMenu.load(menusFile.getConfig().getConfigurationSection("Pull-Menu"));
-        rewardsMenu.load(menusFile.getConfig().getConfigurationSection("Rewards-Menu"));
-        crateOpenMenu.load(menusFile.getConfig().getConfigurationSection("Crate-Open-Menu"));
-        menuManager.addMenu(crateMenu, pullMenu, rewardsMenu, crateOpenMenu);
+        crateMenu.load(this.menusFile.getConfig().getConfigurationSection("Crate-Menu"));
+        pullMenu.load(this.menusFile.getConfig().getConfigurationSection("Pull-Menu"));
+        rewardsMenu.load(this.menusFile.getConfig().getConfigurationSection("Rewards-Menu"));
+        crateOpenMenu.load(this.menusFile.getConfig().getConfigurationSection("Crate-Open-Menu"));
+        this.menuManager.addMenu(crateMenu, pullMenu, rewardsMenu, crateOpenMenu);
     }
 
-    @Override
-    public void reloadConfig() {
-        super.reloadConfig();
-        fileManager.reloadAllFiles();
+    public void reload() {
+        this.reloadConfig();
+        this.fileManager.reloadAllFiles();
+        GachaConfig.load(this.getConfig());
+        GachaConfig.validateConfig(ConfigType.MENUS, this.menusFile);
+        this.crateCache = new CrateCache();
+        this.crateCache.loadFrom(this.cratesFile.getConfig());
+        this.playerCache = new PlayerCache(this);
+        this.playerCache.setFile(this.dataFile.getConfig());
+        Lang.setFileConfiguration(this.langFile.getConfig());
+        this.saveData();
+    }
 
-        //Load
-        GachaConfig.load(getConfig());
-        GachaConfig.validateConfig(ConfigType.MENUS, menusFile);
-        crateCache = new CrateCache();
-        crateCache.loadFrom(cratesFile.getConfig());
-        Lang.setFileConfiguration(langFile.getConfig());
-        crateCache.saveTo(fileManager.getFile("crates"));
+    public void saveData() {
+        this.playerCache.saveTo(this.dataFile);
+        this.crateCache.saveTo(this.cratesFile);
+        Bukkit.getLogger().info("[GachaCrates] Saved Data");
     }
 }

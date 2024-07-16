@@ -15,49 +15,44 @@ public class CmdGiveAll extends CrateCommand {
 
     public CmdGiveAll(GachaCrates plugin) {
         super("giveall", 1, 2);
-        setPermission("gachacrates.admin");
-
+        this.setPermission("gachacrates.admin");
         this.plugin = plugin;
     }
 
     @Override
     public void run(CommandSender sender, String[] args) {
-        Optional<Crate> optionalCrate = plugin.getCrateCache().getCrate(args[0]);
+        Optional<Crate> optionalCrate = this.plugin.getCrateCache().getCrate(args[0]);
         HashMap<String, String> replacements = new HashMap<>();
-
         if (optionalCrate.isEmpty()) {
             replacements.put("%crate%", args[0]);
             Lang.ERR_UNKNOWN_CRATE.send(sender, replacements);
-            return;
-        }
-        Crate crate = optionalCrate.get();
-        int amount = 1;
+        } else {
+            Crate crate = optionalCrate.get();
+            int amount = 1;
+            if (args.length > 1) {
+                try {
+                    amount = Integer.parseInt(args[1]);
+                } catch (IllegalArgumentException var8) {
+                    replacements.put("%arg%", args[1]);
+                    Lang.ERR_INVALID_AMOUNT.send(sender, replacements);
+                    return;
+                }
+            }
 
-        if (args.length > 1) {
-            try {
-                amount = Integer.parseInt(args[1]);
-            } catch (IllegalArgumentException e) {
+            if (amount < 1) {
                 replacements.put("%arg%", args[1]);
                 Lang.ERR_INVALID_AMOUNT.send(sender, replacements);
-                return;
+            } else {
+                int finalAmount = amount;
+                replacements.put("%crate%", crate.getName());
+                replacements.put("%amount%", Integer.toString(amount));
+                Bukkit.getOnlinePlayers().forEach(p -> {
+                    GachaPlayer gachaPlayer = this.plugin.getPlayerCache().getPlayer(p.getUniqueId());
+                    gachaPlayer.setAvailablePulls(crate, gachaPlayer.getAvailablePulls(crate) + finalAmount);
+                    Lang.CRATE_RECEIVED.send(p, replacements);
+                });
+                Lang.CRATE_GIVEN_TO_ALL.send(sender, replacements);
             }
         }
-
-        if (amount < 1) {
-            replacements.put("%arg%", args[1]);
-            Lang.ERR_INVALID_AMOUNT.send(sender, replacements);
-            return;
-        }
-        int finalAmount = amount;
-
-        replacements.put("%crate%", crate.getName());
-        replacements.put("%amount%", Integer.toString(amount));
-        Bukkit.getOnlinePlayers().forEach((p) -> {
-            GachaPlayer gachaPlayer = plugin.getPlayerCache().getPlayer(p.getUniqueId());
-
-            gachaPlayer.setAvailablePulls(crate, gachaPlayer.getAvailablePulls(crate) + finalAmount);
-            Lang.CRATE_RECEIVED.send(p, replacements);
-        });
-        Lang.CRATE_GIVEN_TO_ALL.send(sender, replacements);
     }
 }

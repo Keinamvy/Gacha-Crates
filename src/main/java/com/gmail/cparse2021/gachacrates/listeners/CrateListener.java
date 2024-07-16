@@ -30,102 +30,81 @@ public class CrateListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         Block clickedBlock = e.getClickedBlock();
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && clickedBlock != null) {
+            Optional<Crate> crate = this.plugin.getCrateCache().getCrate(clickedBlock.getLocation());
+            if (!crate.isEmpty()) {
+                Player player = e.getPlayer();
+                CrateSession crateSession = this.plugin.getSessionManager().getCrateSession(player.getUniqueId());
+                Optional<Menu> crateMenu = this.plugin.getMenuManager().getMenu("crate");
+                if (crateSession == null) {
+                    crateSession = new CrateSession(player.getUniqueId(), crate.get(), clickedBlock.getLocation());
+                } else {
+                    crateSession.setCrate(crate.get());
+                    crateSession.setCrateLocation(clickedBlock.getLocation());
+                }
 
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK || clickedBlock == null) {
-            return;
+                e.setCancelled(true);
+                if (crate.get().isCrateLocationInUse(clickedBlock.getLocation())) {
+                    Lang.ERR_CRATE_IN_USE.send(player);
+                } else if (crateSession.getOpenPhase() == CrateOpenPhase.OPENING) {
+                    Lang.ERR_OPENING_CRATE.send(player);
+                } else if (crateMenu.isEmpty()) {
+                    Lang.ERR_UNKNOWN.send(player);
+                } else {
+                    this.plugin.getSessionManager().registerSession(crateSession);
+                    crateMenu.get().open(player);
+                }
+            }
         }
-        Optional<Crate> crate = plugin.getCrateCache().getCrate(clickedBlock.getLocation());
-
-        if (crate.isEmpty()) {
-            return;
-        }
-        Player player = e.getPlayer();
-        CrateSession crateSession = plugin.getSessionManager().getCrateSession(player.getUniqueId());
-        Optional<Menu> crateMenu = plugin.getMenuManager().getMenu("crate");
-
-        if (crateSession == null) {
-            crateSession = new CrateSession(player.getUniqueId(), crate.get(), clickedBlock.getLocation());
-        } else {
-            crateSession.setCrate(crate.get());
-            crateSession.setCrateLocation(clickedBlock.getLocation());
-        }
-
-        e.setCancelled(true);
-        if (crate.get().isCrateLocationInUse(clickedBlock.getLocation())) {
-            Lang.ERR_CRATE_IN_USE.send(player);
-            return;
-        }
-
-        if (crateSession.getOpenPhase() == CrateOpenPhase.OPENING) {
-            Lang.ERR_OPENING_CRATE.send(player);
-            return;
-        }
-
-        if (crateMenu.isEmpty()) {
-            Lang.ERR_UNKNOWN.send(player);
-            return;
-        }
-
-        plugin.getSessionManager().registerSession(crateSession);
-        crateMenu.get().open(player);
     }
 
     @EventHandler
     public void onBreak(BlockBreakEvent e) {
         Block block = e.getBlock();
         Player player = e.getPlayer();
-        Optional<Crate> crate = plugin.getCrateCache().getCrate(block.getLocation());
+        Optional<Crate> crate = this.plugin.getCrateCache().getCrate(block.getLocation());
         HashMap<String, String> messageReplacements = new HashMap<>();
-
-        if (crate.isEmpty()) {
-            return;
+        if (!crate.isEmpty()) {
+            if (!player.hasPermission("gachacrates.admin.removelocation")) {
+                Lang.ERR_MISSING_PERM.send(player);
+                e.setCancelled(true);
+            } else {
+                messageReplacements.put("%crate%", crate.get().getName());
+                if (!this.destroyingCrate.contains(player.getUniqueId())) {
+                    e.setCancelled(true);
+                    this.startDestruction(player, crate.get());
+                    Lang.CRATE_CONFIRM_DELETE.send(player, messageReplacements);
+                } else {
+                    Optional<Crate> selectedCrate = this.plugin.getCrateCache().getCrate(this.crateDestructionMap.get(player.getUniqueId()));
+                    if (selectedCrate.isEmpty()) {
+                        e.setCancelled(true);
+                        this.destroyingCrate.remove(player.getUniqueId());
+                        this.crateDestructionMap.remove(player.getUniqueId());
+                        Lang.ERR_UNKNOWN.send(player);
+                    } else if (!selectedCrate.get().getUuid().equals(crate.get().getUuid())) {
+                        e.setCancelled(true);
+                        this.startDestruction(player, crate.get());
+                        Lang.CRATE_CONFIRM_DELETE.send(player, messageReplacements);
+                    } else {
+                        crate.get().removeLocation(block.getLocation());
+                        Lang.CRATE_LOCATION_REMOVED.send(player, messageReplacements);
+                    }
+                }
+            }
         }
-
-        if (!player.hasPermission("gachacrates.admin.removelocation")) {
-            Lang.ERR_MISSING_PERM.send(player);
-            e.setCancelled(true);
-            return;
-        }
-
-        messageReplacements.put("%crate%", crate.get().getName());
-        if (!destroyingCrate.contains(player.getUniqueId())) {
-            e.setCancelled(true);
-            startDestruction(player, crate.get());
-            Lang.CRATE_CONFIRM_DELETE.send(player, messageReplacements);
-            return;
-        }
-        Optional<Crate> selectedCrate = plugin.getCrateCache().getCrate(crateDestructionMap.get(player.getUniqueId()));
-
-        if (selectedCrate.isEmpty()) {
-            e.setCancelled(true);
-            destroyingCrate.remove(player.getUniqueId());
-            crateDestructionMap.remove(player.getUniqueId());
-            Lang.ERR_UNKNOWN.send(player);
-            return;
-        }
-
-        if (!selectedCrate.get().getUuid().equals(crate.get().getUuid())) {
-            e.setCancelled(true);
-            startDestruction(player, crate.get());
-            Lang.CRATE_CONFIRM_DELETE.send(player, messageReplacements);
-            return;
-        }
-
-        crate.get().removeLocation(block.getLocation());
-        Lang.CRATE_LOCATION_REMOVED.send(player, messageReplacements);
     }
 
     private void startDestruction(Player player, Crate crate) {
-        if (taskMap.containsKey(player.getUniqueId())) {
-            Bukkit.getScheduler().cancelTask(taskMap.get(player.getUniqueId()));
-            taskMap.remove(player.getUniqueId());
+        if (this.taskMap.containsKey(player.getUniqueId())) {
+            Bukkit.getScheduler().cancelTask(this.taskMap.get(player.getUniqueId()));
+            this.taskMap.remove(player.getUniqueId());
         }
 
-        destroyingCrate.add(player.getUniqueId());
-        crateDestructionMap.put(player.getUniqueId(), crate.getUuid());
-        taskMap.put(player.getUniqueId(), Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-            destroyingCrate.remove(player.getUniqueId());
-            crateDestructionMap.remove(player.getUniqueId());
+        this.destroyingCrate.add(player.getUniqueId());
+        this.crateDestructionMap.put(player.getUniqueId(), crate.getUuid());
+        this.taskMap.put(player.getUniqueId(), Bukkit.getScheduler().runTaskLaterAsynchronously(this.plugin, () -> {
+            this.destroyingCrate.remove(player.getUniqueId());
+            this.crateDestructionMap.remove(player.getUniqueId());
         }, 60L).getTaskId());
     }
 }

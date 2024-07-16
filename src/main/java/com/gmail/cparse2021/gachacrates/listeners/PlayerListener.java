@@ -14,7 +14,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        // Ensure player data is loaded on join
-        plugin.getPlayerCache().getPlayer(e.getPlayer().getUniqueId());
+        this.plugin.getPlayerCache().getPlayer(e.getPlayer().getUniqueId());
     }
 }

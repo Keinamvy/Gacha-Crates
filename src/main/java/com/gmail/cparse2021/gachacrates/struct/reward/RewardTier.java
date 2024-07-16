@@ -10,109 +10,103 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class RewardTier {
-    private final String name;
     private HashMap<Reward, Double> rewardProbabilityMap = new HashMap<>();
+    private final String name;
     private int pityLimit = 0;
     private boolean pityEnabled = false;
-    private boolean insuranceEnabled = false;
     private ItemStack displayItem = new ItemBuilder(Material.WHITE_STAINED_GLASS_PANE).setDisplayName("&7Reward Tier").build();
     private Color color = Color.SILVER;
+    private boolean insurance = false;
 
     public RewardTier(String name) {
         this.name = name;
     }
 
-    /**
-     * Generate a random reward based on set probability
-     *
-     * @return Generated RewardTier
-     */
     public Reward generateReward(GachaPlayer player, Crate crate, RewardTier rewardTier) {
         double randDouble = Math.random();
         double count = 0.0;
 
-        for (Map.Entry<Reward, Double> rewardProbability : rewardProbabilityMap.entrySet()) {
-            if (player.getGuaranteedState(crate, rewardTier)) {
+        for (Entry<Reward, Double> rewardProbability : this.rewardProbabilityMap.entrySet()) {
+            if (player.getGuaranteeState(crate, rewardTier)) {
                 if (!rewardProbability.getKey().isFeatured()) {
-                    continue;
+                    return rewardProbability.getKey();
                 }
-                Bukkit.getLogger().info("Bảo hiểm kích hoạt");
-                return rewardProbability.getKey();
-            }
-            count += rewardProbability.getValue();
-            if (randDouble <= count) {
-                return rewardProbability.getKey();
+            } else {
+                count += rewardProbability.getValue();
+                if (randDouble <= count) {
+                    return rewardProbability.getKey();
+                }
             }
         }
 
-        return rewardProbabilityMap.entrySet().iterator().next().getKey();
+        return this.rewardProbabilityMap.entrySet().iterator().next().getKey();
     }
 
     public Color getColor() {
-        return color;
+        return this.color;
     }
 
     public ItemStack getDisplayItem() {
-        return displayItem;
+        return this.displayItem;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public int getPityLimit() {
-        return pityLimit;
+        return this.pityLimit;
     }
 
     public Set<Reward> getRewards() {
-        return rewardProbabilityMap.keySet();
-    }
-
-    public boolean isInsuranceEnabled() {
-        return insuranceEnabled;
+        return this.rewardProbabilityMap.keySet();
     }
 
     public boolean isPityEnabled() {
-        return pityEnabled;
+        return this.pityEnabled;
     }
 
-    public void loadFrom(ConfigurationSection config) {
-        ConfigurationSection rewards = config.getConfigurationSection("Rewards");
+    public boolean isInsuranceEnabled() {
+        return this.insurance;
+    }
 
-        this.pityEnabled = Boolean.parseBoolean(config.getString("Pity", "false"));
-        this.pityLimit = config.getInt("Pity-Limit", 0);
-        this.displayItem = Utils.decodeItem(config.getString("Display-Item", "WHITE_STAINED_GLASS_PANE name:&7" + name));
-        this.color = Color.fromRGB(config.getInt("Color.R", 255), config.getInt("Color.G", 255), config.getInt("Color.B", 255));
-        this.insuranceEnabled = Boolean.parseBoolean(config.getString("Insurance", "false"));
+    public void loadFrom(ConfigurationSection rewardTierSection) {
+        ConfigurationSection rewards = rewardTierSection.getConfigurationSection("Rewards");
+        this.pityEnabled = Boolean.parseBoolean(rewardTierSection.getString("Pity", "false"));
+        this.pityLimit = rewardTierSection.getInt("Pity-Limit", 0);
+        this.displayItem = Utils.decodeItem(rewardTierSection.getString("Display-Item", "WHITE_STAINED_GLASS_PANE name:&7" + this.name));
+        this.color = Color.fromRGB(rewardTierSection.getInt("Color.R", 255), rewardTierSection.getInt("Color.G", 255), rewardTierSection.getInt("Color.B", 255));
+        this.insurance = rewardTierSection.getBoolean("Insurance", false);
         if (rewards != null) {
             for (String rewardName : rewards.getKeys(false)) {
                 ConfigurationSection rewardsSection = rewards.getConfigurationSection(rewardName);
                 Reward reward = new Reward(rewardName);
-                double chance = rewards.getDouble(rewardName + ".Chance", 10) / 100;
+                double chance = rewards.getDouble(rewardName + ".Chance", 10.0) / 100.0;
 
                 assert rewardsSection != null;
+
                 reward.loadFrom(rewardsSection);
-                rewardProbabilityMap.put(reward, chance);
+                this.rewardProbabilityMap.put(reward, chance);
             }
 
-            sortProbabilityMap();
+            this.sortProbabilityMap();
         } else {
-            Bukkit.getLogger().log(Level.WARNING, "[GachaCrates] Không có phần thưởng nào được chỉ định cho bậc thưởng `" + name + "`");
+            Bukkit.getLogger().log(Level.WARNING, "[GachaCrates] No rewards specified for reward tier `" + this.name + "`");
         }
     }
 
-    /**
-     * Sort the probability map
-     */
     private void sortProbabilityMap() {
-        List<Map.Entry<Reward, Double>> probabilityMapList = new LinkedList<>(rewardProbabilityMap.entrySet());
-
-        probabilityMapList.sort(Map.Entry.comparingByValue());
-        rewardProbabilityMap = probabilityMapList.stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (prev, next) -> next, HashMap::new));
+        List<Entry<Reward, Double>> probabilityMapList = new LinkedList<>(this.rewardProbabilityMap.entrySet());
+        probabilityMapList.sort(Entry.comparingByValue());
+        this.rewardProbabilityMap = probabilityMapList.stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue, (prev, next) -> next, HashMap::new));
     }
 }

@@ -11,139 +11,93 @@ import java.util.UUID;
 
 public class GachaPlayer {
     private final HashMap<Crate, HashMap<RewardTier, Integer>> pityMap = new HashMap<>();
+    private final HashMap<Crate, HashMap<RewardTier, Boolean>> insuranceMap = new HashMap<>();
     private final HashMap<Crate, Integer> pullMap = new HashMap<>();
-    private final HashMap<Crate, HashMap<RewardTier, Boolean>> guaranteedMap = new HashMap<>();
     private final UUID uuid;
 
     public GachaPlayer(UUID uuid) {
         this.uuid = uuid;
     }
 
-    /**
-     * Get the amount of pulls available for a crate
-     *
-     * @param crate The Crate to retrieve available pulls of
-     * @return Available pull count as int
-     */
     public int getAvailablePulls(Crate crate) {
-        return pullMap.getOrDefault(crate, 0);
+        return this.pullMap.getOrDefault(crate, 0);
     }
 
-    public boolean getGuaranteedState(Crate crate, RewardTier rewardTier) {
-        return getGuaranteedMap(crate).getOrDefault(rewardTier, false);
-    }
-
-    /**
-     * Retrieve the current pity level
-     *
-     * @param crate      The Crate to fetch the pity map of
-     * @param rewardTier The RewardTier to get the pity of
-     * @return Current pity level as int, defaults to 0
-     */
     public int getPity(Crate crate, RewardTier rewardTier) {
-        return getPityMap(crate).getOrDefault(rewardTier, 0);
+        return this.getPityMap(crate).getOrDefault(rewardTier, 0);
     }
 
-    /**
-     * Retrieve the complete pity map
-     *
-     * @return HashMap with Crate as the key and specific pity map for the crate as the value
-     */
+    public boolean getGuaranteeState(Crate crate, RewardTier rewardTier) {
+        return this.getInsuranceMap(crate).getOrDefault(rewardTier, false);
+    }
+
     public HashMap<Crate, HashMap<RewardTier, Integer>> getPityMap() {
-        return pityMap;
+        return this.pityMap;
     }
 
-    public HashMap<Crate, HashMap<RewardTier, Boolean>> getGuaranteedMap() {
-        return guaranteedMap;
+    public HashMap<Crate, HashMap<RewardTier, Boolean>> getInsuranceMap() {
+        return this.insuranceMap;
     }
 
-
-    /**
-     * Retrieve a specific pity map
-     *
-     * @param crate The crate to fetch the pity map of
-     * @return HashMap with RewardTier as the value and current pity level as the value
-     */
     @Nonnull
     public HashMap<RewardTier, Integer> getPityMap(Crate crate) {
-        if (!pityMap.containsKey(crate)) {
-            pityMap.put(crate, new HashMap<>());
+        if (!this.pityMap.containsKey(crate)) {
+            this.pityMap.put(crate, new HashMap<>());
         }
 
-        return pityMap.get(crate);
+        return this.pityMap.get(crate);
     }
 
     @Nonnull
-    public HashMap<RewardTier, Boolean> getGuaranteedMap(Crate crate) {
-        if (!guaranteedMap.containsKey(crate)) {
-            guaranteedMap.put(crate, new HashMap<>());
+    public HashMap<RewardTier, Boolean> getInsuranceMap(Crate crate) {
+        if (!this.insuranceMap.containsKey(crate)) {
+            this.insuranceMap.put(crate, new HashMap<>());
         }
 
-        return guaranteedMap.get(crate);
+        return this.insuranceMap.get(crate);
     }
 
     public Player getPlayer() {
-        return Bukkit.getPlayer(uuid);
+        return Bukkit.getPlayer(this.uuid);
     }
 
     public HashMap<Crate, Integer> getPullMap() {
-        return pullMap;
+        return this.pullMap;
     }
 
     public UUID getUuid() {
-        return uuid;
+        return this.uuid;
     }
 
-
-
-    /**
-     * Increase pity of all pity enabled reward tiers across a crate except for a specific crate
-     *
-     * @param crate     The crate containing the reward tiers
-     * @param exception The
-     * @param amt       The amount to increase pity by
-     */
-    public void increasePity(Crate crate, RewardTier exception, int amt) {
+    public void increasePity(Crate crate, int amt) {
         for (RewardTier rewardTier : crate.getRewardTiers()) {
-            if (!rewardTier.isPityEnabled() || rewardTier == exception) {
-                continue;
+            if (rewardTier.isPityEnabled()) {
+                this.setPity(crate, rewardTier, Math.min(this.getPity(crate, rewardTier) + amt, rewardTier.getPityLimit() - 1));
             }
-
-            setPity(crate, rewardTier, Math.min(getPity(crate, rewardTier) + amt, rewardTier.getPityLimit() - 1));
         }
     }
 
-    /**
-     * Reset the current pity level to the default value (0)
-     *
-     * @param crate      The Crate containing the specific pity map
-     * @param rewardTier The RewardTier to reset the pity of
-     */
+    public void increasePity(Crate crate, RewardTier exception, int amt) {
+        for (RewardTier rewardTier : crate.getRewardTiers()) {
+            if (rewardTier.isPityEnabled() && rewardTier != exception) {
+                this.setPity(crate, rewardTier, Math.min(this.getPity(crate, rewardTier) + amt, rewardTier.getPityLimit() - 1));
+            }
+        }
+    }
+
     public void resetPity(Crate crate, RewardTier rewardTier) {
-        getPityMap(crate).put(rewardTier, 0);
+        this.getPityMap(crate).put(rewardTier, 0);
     }
 
-    /**
-     * Set the amount of available pulls for a Crate
-     *
-     * @param crate The Crate to set available pulls for
-     * @param count The new pull balance
-     */
     public void setAvailablePulls(Crate crate, int count) {
-        pullMap.put(crate, count);
+        this.pullMap.put(crate, count);
     }
 
-    /**
-     * Set the current pity level
-     *
-     * @param crate      The Crate to fetch the pity map of
-     * @param rewardTier The RewardTier to set the pity of
-     */
     public void setPity(Crate crate, RewardTier rewardTier, int pityLevel) {
-        getPityMap(crate).put(rewardTier, pityLevel);
+        this.getPityMap(crate).put(rewardTier, pityLevel);
     }
 
-    public void setGuaranteedState(Crate crate, RewardTier rewardTier, boolean state) {
-        getGuaranteedMap(crate).put(rewardTier, state);
+    public void setGuaranteeState(Crate crate, RewardTier rewardTier, boolean state) {
+        this.getInsuranceMap(crate).put(rewardTier, state);
     }
 }

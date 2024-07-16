@@ -15,14 +15,14 @@ public abstract class Menu {
     }
 
     public String getMenuID() {
-        return menuID;
+        return this.menuID;
     }
 
-    public abstract void load(@Nullable ConfigurationSection configurationSection);
+    public abstract void load(@Nullable ConfigurationSection var1);
 
-    public abstract void open(Player player);
+    public abstract void open(Player var1);
 
-    public abstract void processClick(InventoryClickEvent e);
+    public abstract void processClick(InventoryClickEvent var1);
 
-    public abstract void processClose(InventoryCloseEvent e);
+    public abstract void processClose(InventoryCloseEvent var1);
 }

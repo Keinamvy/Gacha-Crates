@@ -18,25 +18,19 @@ public class MenuListener implements Listener {
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
-        Menu menu = plugin.getMenuManager().getActiveMenu(player.getUniqueId());
-
-        if (menu == null) {
-            return;
+        Menu menu = this.plugin.getMenuManager().getActiveMenu(player.getUniqueId());
+        if (menu != null) {
+            e.setCancelled(true);
+            menu.processClick(e);
         }
-
-        e.setCancelled(true);
-        menu.processClick(e);
     }
 
     @EventHandler
     public void onClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
-        Menu menu = plugin.getMenuManager().getActiveMenu(player.getUniqueId());
-
-        if (menu == null) {
-            return;
+        Menu menu = this.plugin.getMenuManager().getActiveMenu(player.getUniqueId());
+        if (menu != null) {
+            menu.processClose(e);
         }
-
-        menu.processClose(e);
     }
 }

@@ -15,9 +15,8 @@ public class CmdRemove extends CrateCommand {
 
     public CmdRemove(GachaCrates plugin) {
         super("remove", 0, 0);
-        setPermission("gachacrates.admin");
-        setPlayerOnly(true);
-
+        this.setPermission("gachacrates.admin");
+        this.setPlayerOnly(true);
         this.plugin = plugin;
     }
 
@@ -26,20 +25,17 @@ public class CmdRemove extends CrateCommand {
         HashMap<String, String> replacements = new HashMap<>();
         Player player = (Player) sender;
         Block targetBlock = player.getTargetBlock(null, 5);
-
         if (targetBlock.isEmpty()) {
             Lang.ERR_NO_BLOCK.send(player);
-            return;
+        } else {
+            Optional<Crate> optionalCrate = this.plugin.getCrateCache().getCrate(targetBlock.getLocation());
+            if (optionalCrate.isEmpty()) {
+                Lang.ERR_NO_CRATE_FOUND.send(player);
+            } else {
+                replacements.put("%crate%", optionalCrate.get().getName());
+                optionalCrate.get().removeLocation(targetBlock.getLocation());
+                Lang.CRATE_LOCATION_REMOVED.send(player, replacements);
+            }
         }
-        Optional<Crate> optionalCrate = plugin.getCrateCache().getCrate(targetBlock.getLocation());
-
-        if (optionalCrate.isEmpty()) {
-            Lang.ERR_NO_CRATE_FOUND.send(player);
-            return;
-        }
-
-        replacements.put("%crate%", optionalCrate.get().getName());
-        optionalCrate.get().removeLocation(targetBlock.getLocation());
-        Lang.CRATE_LOCATION_REMOVED.send(player, replacements);
     }
 }

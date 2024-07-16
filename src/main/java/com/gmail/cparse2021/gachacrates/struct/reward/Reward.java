@@ -23,35 +23,28 @@ public class Reward {
     }
 
     public List<String> getCommands() {
-        return commands;
+        return this.commands;
     }
 
     public ItemStack getDisplayItem() {
-        return displayItem;
+        return this.displayItem;
     }
-
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
-    public Boolean isFeatured() {
-        return featured;
+    public boolean isFeatured() {
+        return !this.featured;
     }
 
-    /**
-     * Give rewards to player
-     *
-     * @param player The player to give the rewards to
-     */
     public void execute(Player player) {
-        for (String cmd : commands) {
+        for (String cmd : this.commands) {
             cmd = cmd.replace("%player%", player.getName());
-
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
         }
 
-        for (ItemStack item : items) {
+        for (ItemStack item : this.items) {
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItem(player.getLocation(), item);
             } else {
@@ -60,10 +53,10 @@ public class Reward {
         }
     }
 
-    public void loadFrom(ConfigurationSection config) {
-        config.getStringList("Items").forEach((i) -> items.add(Utils.decodeItem(i)));
-        commands.addAll(config.getStringList("Commands"));
-        displayItem = Utils.decodeItem(config.getString("Display-Item", "AMETHYST_SHARD 1 name:&d" + name));
-        featured = config.getBoolean("Featured");
+    public void loadFrom(ConfigurationSection rewardSection) {
+        rewardSection.getStringList("Items").forEach(i -> this.items.add(Utils.decodeItem(i)));
+        this.commands.addAll(rewardSection.getStringList("Commands"));
+        this.displayItem = Utils.decodeItem(rewardSection.getString("Display-Item", "AMETHYST_SHARD 1 name:&d" + this.name));
+        this.featured = rewardSection.getBoolean("Featured", false);
     }
 }

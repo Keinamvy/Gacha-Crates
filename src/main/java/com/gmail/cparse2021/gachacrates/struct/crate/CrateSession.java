@@ -22,11 +22,11 @@ public class CrateSession {
     }
 
     public void clearRewards() {
-        rewards.clear();
+        this.rewards.clear();
     }
 
     public Crate getCrate() {
-        return crate;
+        return this.crate;
     }
 
     public void setCrate(Crate crate) {
@@ -34,7 +34,7 @@ public class CrateSession {
     }
 
     public Location getCrateLocation() {
-        return crateLocation;
+        return this.crateLocation;
     }
 
     public void setCrateLocation(Location crateLocation) {
@@ -42,7 +42,7 @@ public class CrateSession {
     }
 
     public CrateOpenPhase getOpenPhase() {
-        return openPhase;
+        return this.openPhase;
     }
 
     public void setOpenPhase(CrateOpenPhase openPhase) {
@@ -50,16 +50,16 @@ public class CrateSession {
     }
 
     public UUID getPlayerUuid() {
-        return playerUuid;
+        return this.playerUuid;
     }
 
     @Nullable
     public Reward getReward(int slotNumber) {
-        return rewards.get(slotNumber);
+        return this.rewards.get(slotNumber);
     }
 
     public Collection<Reward> getRewards() {
-        return rewards.values();
+        return this.rewards.values();
     }
 
     public void setRewards(HashMap<Integer, Reward> rewards) {
