@@ -2,8 +2,8 @@ package com.gmail.cparse2021.gachacrates.struct.crate;
 
 import com.gmail.cparse2021.gachacrates.GachaCrates;
 import com.gmail.cparse2021.gachacrates.lang.Lang;
-import com.gmail.cparse2021.gachacrates.menu.menus.CrateOpenMenu;
 import com.gmail.cparse2021.gachacrates.menu.Menu;
+import com.gmail.cparse2021.gachacrates.menu.menus.CrateOpenMenu;
 import com.gmail.cparse2021.gachacrates.struct.GachaPlayer;
 import com.gmail.cparse2021.gachacrates.struct.reward.Reward;
 import com.gmail.cparse2021.gachacrates.struct.reward.RewardTier;

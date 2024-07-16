@@ -32,13 +32,11 @@ public class PlayerCache {
                 for (String crateUuid : dataSection.getKeys(false)) {
                     Optional<Crate> crate = this.plugin.getCrateCache().getCrate(UUID.fromString(crateUuid));
                     ConfigurationSection pityMapSection = dataSection.getConfigurationSection(crateUuid + ".Pity-Map");
-                    if (!crate.isEmpty()) {
+                    if (crate.isPresent()) {
                         if (pityMapSection != null) {
                             for (String rewardTierName : pityMapSection.getKeys(false)) {
                                 Optional<RewardTier> rewardTier = crate.get().getRewardTier(rewardTierName);
-                                if (!rewardTier.isEmpty()) {
-                                    gachaPlayer.setPity(crate.get(), rewardTier.get(), pityMapSection.getInt(rewardTierName, 0));
-                                }
+                                rewardTier.ifPresent(tier -> gachaPlayer.setPity(crate.get(), tier, pityMapSection.getInt(rewardTierName, 0)));
                             }
                         }
 
