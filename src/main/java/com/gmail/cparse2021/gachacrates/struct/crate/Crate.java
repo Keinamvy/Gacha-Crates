@@ -61,8 +61,7 @@ public class Crate {
         for (Map.Entry<RewardTier, Double> rewardProbability : rewardProbabilityMap.entrySet()) {
             RewardTier rewardTier = rewardProbability.getKey();
             count += rewardProbability.getValue();
-
-            if ((randDouble - randDouble * (gachaPlayer.getPity(this,rewardTier) * 0.015)) <= count ||
+            if (randDouble * (1 - (gachaPlayer.getPity(this,rewardTier) * 1.41) / 100) <= count ||
                     (rewardTier.isPityEnabled() && gachaPlayer.getPity(this, rewardTier) >= rewardTier.getPityLimit() - 1)) {
                 return rewardTier;
             }

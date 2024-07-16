@@ -85,7 +85,7 @@ public class CrateOpenMenu extends Menu {
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.7F, 0.7F);
                 }
             }
-        }).runTaskTimer(this.plugin, 0L, 7L);
+        }).runTaskTimer(this.plugin, 0L, 18 / pullCount);
         crateSession.setRewards(rewards);
         crateSession.setOpenPhase(CrateOpenPhase.OPENING);
         this.offhandSnapshotMap.put(player.getUniqueId(), player.getInventory().getItemInOffHand());
