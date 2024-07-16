@@ -62,7 +62,7 @@ public class Crate {
             RewardTier rewardTier = rewardProbability.getKey();
             count += rewardProbability.getValue();
 
-            if (randDouble <= count ||
+            if ((randDouble - randDouble * (gachaPlayer.getPity(this,rewardTier) * 0.015)) <= count ||
                     (rewardTier.isPityEnabled() && gachaPlayer.getPity(this, rewardTier) >= rewardTier.getPityLimit() - 1)) {
                 return rewardTier;
             }

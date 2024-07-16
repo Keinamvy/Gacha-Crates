@@ -21,7 +21,7 @@ public class GachaCrates extends JavaPlugin {
     private CrateCache crateCache;
     private PlayerCache playerCache;
     private final FileManager fileManager = new FileManager(this);
-    private final MenuManager menuManager = new MenuManager();
+    private MenuManager menuManager;
     private final SessionManager sessionManager = new SessionManager();
     private final CustomFile cratesFile = this.fileManager.getFile("crates");
     private final CustomFile dataFile = this.fileManager.getFile("data");
@@ -100,6 +100,7 @@ public class GachaCrates extends JavaPlugin {
         PullMenu pullMenu = new PullMenu(this);
         RewardsMenu rewardsMenu = new RewardsMenu(this);
         CrateOpenMenu crateOpenMenu = new CrateOpenMenu(this);
+        menuManager = new MenuManager();
         crateMenu.load(this.menusFile.getConfig().getConfigurationSection("Crate-Menu"));
         pullMenu.load(this.menusFile.getConfig().getConfigurationSection("Pull-Menu"));
         rewardsMenu.load(this.menusFile.getConfig().getConfigurationSection("Rewards-Menu"));
@@ -110,6 +111,19 @@ public class GachaCrates extends JavaPlugin {
     public void reload() {
         this.reloadConfig();
         this.fileManager.reloadAllFiles();
+
+        CrateMenu crateMenu = new CrateMenu(this);
+        PullMenu pullMenu = new PullMenu(this);
+        RewardsMenu rewardsMenu = new RewardsMenu(this);
+        CrateOpenMenu crateOpenMenu = new CrateOpenMenu(this);
+
+        menuManager = new MenuManager();
+        crateMenu.load(this.menusFile.getConfig().getConfigurationSection("Crate-Menu"));
+        pullMenu.load(this.menusFile.getConfig().getConfigurationSection("Pull-Menu"));
+        rewardsMenu.load(this.menusFile.getConfig().getConfigurationSection("Rewards-Menu"));
+        crateOpenMenu.load(this.menusFile.getConfig().getConfigurationSection("Crate-Open-Menu"));
+        menuManager.addMenu(crateMenu, pullMenu, rewardsMenu, crateOpenMenu);
+
         GachaConfig.load(this.getConfig());
         GachaConfig.validateConfig(ConfigType.MENUS, this.menusFile);
         this.crateCache = new CrateCache();
