@@ -17,20 +17,26 @@ public class CmdCheck extends CrateCommand {
 
     public CmdCheck(GachaCrates plugin) {
         super("check", 0, 1);
-        this.setPermission("gachacrates.default");
+        setPermission("gachacrates.default");
+
         this.plugin = plugin;
     }
 
     @Override
     public void run(CommandSender sender, String[] args) {
+        Player target;
         HashMap<String, String> replacements = new HashMap<>();
+
         if (args.length == 0) {
-            if (!(sender instanceof Player target)) {
+            if (!(sender instanceof Player)) {
                 Lang.ERR_NOT_PLAYER.send(sender);
                 return;
             }
+
+            target = (Player) sender;
         } else {
             target = Bukkit.getPlayer(args[0]);
+
             if (target == null) {
                 replacements.put("%player%", args[0]);
                 Lang.ERR_PLAYER_OFFLINE.send(sender, replacements);
@@ -40,10 +46,11 @@ public class CmdCheck extends CrateCommand {
 
         for (String line : Lang.CRATE_PULL_LIST.toStringList()) {
             if (line.contains("%pull-list%")) {
-                this.getPullList(this.plugin.getPlayerCache().getPlayer(target.getUniqueId())).forEach(sender::sendMessage);
-            } else {
-                sender.sendMessage(line);
+                getPullList(plugin.getPlayerCache().getPlayer(target.getUniqueId())).forEach(sender::sendMessage);
+                continue;
             }
+
+            sender.sendMessage(line);
         }
     }
 
@@ -51,7 +58,7 @@ public class CmdCheck extends CrateCommand {
         List<String> pullList = new ArrayList<>();
         HashMap<String, String> replacements = new HashMap<>();
 
-        for (Crate crate : this.plugin.getCrateCache().getCrates()) {
+        for (Crate crate : plugin.getCrateCache().getCrates()) {
             replacements.put("%crate%", crate.getName());
             replacements.put("%pull-count%", Integer.toString(gachaPlayer.getAvailablePulls(crate)));
             pullList.add(Lang.PULL_LIST_FORMAT.toString(replacements, false));
