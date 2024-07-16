@@ -83,7 +83,7 @@ public class CrateMenu extends Menu {
         if (crateSession == null) {
             player.closeInventory();
             Lang.ERR_UNKNOWN.send(player);
-        } else if (!menuManager.isOnCooldown(player.getUniqueId())) {
+        } else if (menuManager.isOnCooldown(player.getUniqueId())) {
             menuManager.addCooldown(player.getUniqueId());
             if (e.getSlot() == 11) {
                 if (pullMenu.isEmpty()) {

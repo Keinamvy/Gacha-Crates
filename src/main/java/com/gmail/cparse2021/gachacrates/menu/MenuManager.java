@@ -31,14 +31,14 @@ public class MenuManager {
 
     public boolean isOnCooldown(UUID uuid) {
         if (!this.clickCooldownMap.containsKey(uuid)) {
-            return false;
+            return true;
         } else {
             long lastClick = this.clickCooldownMap.get(uuid);
             if (System.currentTimeMillis() - lastClick < 100L) {
-                return true;
+                return false;
             } else {
                 this.clickCooldownMap.remove(uuid);
-                return false;
+                return true;
             }
         }
     }

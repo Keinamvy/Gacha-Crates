@@ -10,10 +10,8 @@ import com.gmail.cparse2021.gachacrates.struct.crate.CrateOpenPhase;
 import com.gmail.cparse2021.gachacrates.struct.crate.CrateSession;
 import com.gmail.cparse2021.gachacrates.struct.reward.Reward;
 import com.gmail.cparse2021.gachacrates.struct.reward.RewardTier;
-import com.gmail.cparse2021.gachacrates.util.ItemBuilder;
 import com.gmail.cparse2021.gachacrates.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -103,7 +101,7 @@ public class CrateOpenMenu extends Menu {
             Lang.ERR_UNKNOWN.send(player);
             this.plugin.getSessionManager().clearSession(player.getUniqueId());
             this.plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
-        } else if (!menuManager.isOnCooldown(player.getUniqueId())) {
+        } else if (menuManager.isOnCooldown(player.getUniqueId())) {
             menuManager.addCooldown(player.getUniqueId());
             if (crateSession.getOpenPhase() == CrateOpenPhase.COMPLETE && e.getCurrentItem() != null) {
                 Reward reward = crateSession.getReward(e.getSlot());

@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class GachaCrates extends JavaPlugin {
     private CrateCache crateCache;
     private PlayerCache playerCache;
+    private GachaConfig gachaConfig;
     private final FileManager fileManager = new FileManager(this);
     private MenuManager menuManager;
     private final SessionManager sessionManager = new SessionManager();
@@ -43,6 +44,8 @@ public class GachaCrates extends JavaPlugin {
     public CrateCache getCrateCache() {
         return this.crateCache;
     }
+
+    public GachaConfig getGachaConfig() {return gachaConfig;}
 
     public MenuManager getMenuManager() {
         return this.menuManager;
@@ -80,8 +83,8 @@ public class GachaCrates extends JavaPlugin {
         this.dataFile.saveDefaultConfig();
         this.langFile.saveDefaultConfig();
         this.menusFile.saveDefaultConfig();
-        GachaConfig.load(this.getConfig());
-        GachaConfig.validateConfig(ConfigType.MENUS, this.menusFile);
+        gachaConfig = new GachaConfig();
+        gachaConfig.load(getConfig());
         this.crateCache = new CrateCache();
         this.crateCache.loadFrom(this.cratesFile.getConfig());
         this.playerCache = new PlayerCache(this);
@@ -124,8 +127,9 @@ public class GachaCrates extends JavaPlugin {
         crateOpenMenu.load(this.menusFile.getConfig().getConfigurationSection("Crate-Open-Menu"));
         menuManager.addMenu(crateMenu, pullMenu, rewardsMenu, crateOpenMenu);
 
-        GachaConfig.load(this.getConfig());
-        GachaConfig.validateConfig(ConfigType.MENUS, this.menusFile);
+        gachaConfig = new GachaConfig();
+        gachaConfig.load(getConfig());
+
         this.crateCache = new CrateCache();
         this.crateCache.loadFrom(this.cratesFile.getConfig());
         this.playerCache = new PlayerCache(this);

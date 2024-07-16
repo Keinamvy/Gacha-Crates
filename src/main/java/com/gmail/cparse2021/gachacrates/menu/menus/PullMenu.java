@@ -1,7 +1,6 @@
 package com.gmail.cparse2021.gachacrates.menu.menus;
 
 import com.gmail.cparse2021.gachacrates.GachaCrates;
-import com.gmail.cparse2021.gachacrates.cache.GachaConfig;
 import com.gmail.cparse2021.gachacrates.lang.Lang;
 import com.gmail.cparse2021.gachacrates.menu.Menu;
 import com.gmail.cparse2021.gachacrates.menu.MenuManager;
@@ -112,7 +111,7 @@ public class PullMenu extends Menu {
         if (crateSession == null) {
             player.closeInventory();
             Lang.ERR_UNKNOWN.send(player);
-        } else if (!menuManager.isOnCooldown(player.getUniqueId())) {
+        } else if (menuManager.isOnCooldown(player.getUniqueId())) {
             menuManager.addCooldown(player.getUniqueId());
             if (e.getSlot() == 12 && e.getCurrentItem() != null && e.getCurrentItem().isSimilar(this.decreasePullCountItem)) {
                 if (pullCount == 1) {
@@ -129,7 +128,7 @@ public class PullMenu extends Menu {
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 1.0F);
                 }
             } else if (e.getSlot() == 13 && e.getCurrentItem() != null && e.getCurrentItem().isSimilar(this.increasePullCountItem)) {
-                if (pullCount < gachaPlayer.getAvailablePulls(crateSession.getCrate()) && pullCount < GachaConfig.MAX_PULLS) {
+                if (pullCount < gachaPlayer.getAvailablePulls(crateSession.getCrate()) && pullCount < plugin.getGachaConfig().getMaxPull()) {
                     this.pullCountMap.put(player.getUniqueId(), ++pullCount);
                     this.updatePullCountItem(player, pullCount);
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F);
@@ -144,7 +143,7 @@ public class PullMenu extends Menu {
                 }
             } else {
                 if (e.getSlot() == 14 && e.getCurrentItem() != null && e.getCurrentItem().isSimilar(this.maxPullCountSelectorItem)) {
-                    pullCount = Math.min(GachaConfig.MAX_PULLS, gachaPlayer.getAvailablePulls(crateSession.getCrate()));
+                    pullCount = Math.min(plugin.getGachaConfig().getMaxPull(), gachaPlayer.getAvailablePulls(crateSession.getCrate()));
                     this.pullCountMap.put(player.getUniqueId(), pullCount);
                     this.updatePullCountItem(player, pullCount);
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F);

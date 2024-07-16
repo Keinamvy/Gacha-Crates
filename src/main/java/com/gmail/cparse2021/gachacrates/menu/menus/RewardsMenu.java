@@ -142,7 +142,7 @@ public class RewardsMenu extends Menu {
     public void processClick(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
         MenuManager menuManager = this.plugin.getMenuManager();
-        if (!menuManager.isOnCooldown(player.getUniqueId())) {
+        if (menuManager.isOnCooldown(player.getUniqueId())) {
             menuManager.addCooldown(player.getUniqueId());
             if (e.getSlot() == 45) {
                 Optional<Menu> crateMenu = this.plugin.getMenuManager().getMenu("crate");
