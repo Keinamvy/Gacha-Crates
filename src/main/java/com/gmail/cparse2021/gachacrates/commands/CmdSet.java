@@ -38,6 +38,7 @@ public class CmdSet extends CrateCommand {
             } else {
                 crate.get().addLocation(targetBlock.getLocation());
                 Lang.CRATE_LOCATION_ADDED.send(player, replacements);
+                plugin.saveData();
             }
         }
     }

@@ -32,7 +32,7 @@ public class CrateListener implements Listener {
         Block clickedBlock = e.getClickedBlock();
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK && clickedBlock != null) {
             Optional<Crate> crate = this.plugin.getCrateCache().getCrate(clickedBlock.getLocation());
-            if (!crate.isEmpty()) {
+            if (crate.isPresent()) {
                 Player player = e.getPlayer();
                 CrateSession crateSession = this.plugin.getSessionManager().getCrateSession(player.getUniqueId());
                 Optional<Menu> crateMenu = this.plugin.getMenuManager().getMenu("crate");
@@ -64,7 +64,7 @@ public class CrateListener implements Listener {
         Player player = e.getPlayer();
         Optional<Crate> crate = this.plugin.getCrateCache().getCrate(block.getLocation());
         HashMap<String, String> messageReplacements = new HashMap<>();
-        if (!crate.isEmpty()) {
+        if (crate.isPresent()) {
             if (!player.hasPermission("gachacrates.admin.removelocation")) {
                 Lang.ERR_MISSING_PERM.send(player);
                 e.setCancelled(true);
@@ -88,6 +88,7 @@ public class CrateListener implements Listener {
                     } else {
                         crate.get().removeLocation(block.getLocation());
                         Lang.CRATE_LOCATION_REMOVED.send(player, messageReplacements);
+                        plugin.saveData();
                     }
                 }
             }

@@ -43,8 +43,8 @@ public class CrateOpenMenu extends Menu {
     }
 
     @Override
-    public void open(Player player) {
-    }
+    public void open(Player player) {}
+
 
     public void open(GachaPlayer gachaPlayer, final CrateSession crateSession, int pullCount) {
         int rows = Math.min(pullCount % 9 > 0 ? pullCount / 9 + 1 : pullCount / 9, 6);
@@ -78,7 +78,9 @@ public class CrateOpenMenu extends Menu {
                 if (rewardTier == null) {
                     crateSession.setOpenPhase(CrateOpenPhase.COMPLETE);
                     this.cancel();
-                } else {
+                } else if (crateSession.getOpenPhase() == CrateOpenPhase.COMPLETE) {
+                    this.cancel();
+                }else {
                     inventory.setItem(this.counter++, rewardTier.getDisplayItem());
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.7F, 0.7F);
                 }
@@ -103,7 +105,7 @@ public class CrateOpenMenu extends Menu {
             this.plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
         } else if (menuManager.isOnCooldown(player.getUniqueId())) {
             menuManager.addCooldown(player.getUniqueId());
-            if (crateSession.getOpenPhase() == CrateOpenPhase.COMPLETE && e.getCurrentItem() != null) {
+            if (e.getCurrentItem() != null) {
                 Reward reward = crateSession.getReward(e.getSlot());
                 if (reward != null) {
                     player.getOpenInventory().getTopInventory().setItem(e.getSlot(), reward.getDisplayItem());
@@ -115,6 +117,9 @@ public class CrateOpenMenu extends Menu {
     @Override
     public void processClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
+        if (player == null) {
+            return;
+        }
         CrateSession crateSession = this.plugin.getSessionManager().getCrateSession(player.getUniqueId());
         if (this.offhandSnapshotMap.containsKey(player.getUniqueId())) {
             player.getInventory().setItemInOffHand(player.getInventory().getItemInOffHand());
@@ -122,9 +127,8 @@ public class CrateOpenMenu extends Menu {
 
         if (crateSession == null) {
             this.plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
-        } else if (crateSession.getOpenPhase() == CrateOpenPhase.OPENING) {
-            player.openInventory(e.getInventory());
-        } else {
+        }  else {
+            crateSession.setOpenPhase(CrateOpenPhase.COMPLETE);
             for (Reward reward : crateSession.getRewards()) {
                 reward.execute(player);
             }

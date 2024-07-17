@@ -35,6 +35,7 @@ public class CmdRemove extends CrateCommand {
                 replacements.put("%crate%", optionalCrate.get().getName());
                 optionalCrate.get().removeLocation(targetBlock.getLocation());
                 Lang.CRATE_LOCATION_REMOVED.send(player, replacements);
+                plugin.saveData();
             }
         }
     }
