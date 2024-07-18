@@ -13,6 +13,7 @@ import com.gmail.cparse2021.gachacrates.util.ItemBuilder;
 import com.gmail.cparse2021.gachacrates.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -153,10 +154,12 @@ public class RewardsMenu extends Menu {
                     crateMenu.get().open(player);
                 }
             } else if (e.getSlot() == 52 && Objects.requireNonNull(e.getCurrentItem()).isSimilar(this.previousPageItem)) {
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.7F, 0.7F);
                 this.open(player, this.pageMap.getOrDefault(player.getUniqueId(), 2) - 1);
             } else {
                 if (e.getSlot() == 53 && Objects.requireNonNull(e.getCurrentItem()).isSimilar(this.nextPageItem)) {
                     this.open(player, this.pageMap.getOrDefault(player.getUniqueId(), 1) + 1);
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.7F, 0.7F);
                 }
             }
         }

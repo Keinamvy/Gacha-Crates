@@ -155,6 +155,7 @@ public class PullMenu extends Menu {
                         player.closeInventory();
                         Lang.ERR_UNKNOWN.send(player);
                     } else {
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.7F, 0.7F);
                         crateMenu.get().open(player);
                     }
                 } else {

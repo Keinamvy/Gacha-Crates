@@ -11,6 +11,7 @@ import com.gmail.cparse2021.gachacrates.util.ItemBuilder;
 import com.gmail.cparse2021.gachacrates.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -89,6 +90,7 @@ public class CrateMenu extends Menu {
                 if (pullMenu.isEmpty()) {
                     player.closeInventory();
                 } else {
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.7F, 0.7F);
                     pullMenu.get().open(player);
                 }
             } else {
@@ -97,7 +99,7 @@ public class CrateMenu extends Menu {
                         player.closeInventory();
                         return;
                     }
-
+                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.7F, 0.7F);
                     rewardsMenu.get().open(player);
                 }
             }
