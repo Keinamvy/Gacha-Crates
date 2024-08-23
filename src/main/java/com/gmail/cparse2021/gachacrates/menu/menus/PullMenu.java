@@ -19,6 +19,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,7 +45,7 @@ public class PullMenu extends Menu {
     }
 
     @Override
-    public void load(ConfigurationSection configurationSection) {
+    public void load(ConfigurationSection configurationSection) throws IOException {
         if (configurationSection != null) {
             this.title = Utils.formatString(configurationSection.getString("Title"));
             this.backgroundItem = Utils.decodeItem(configurationSection.getString("Background-Item", "WHITE_STAINED_GLASS_PANE name:&7"));

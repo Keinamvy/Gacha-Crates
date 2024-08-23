@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,8 +20,8 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class RewardTier {
-    private HashMap<Reward, Double> rewardProbabilityMap = new HashMap<>();
     private final String name;
+    private HashMap<Reward, Double> rewardProbabilityMap = new HashMap<>();
     private int pityLimit = 0;
     private boolean pityEnabled = false;
     private ItemStack displayItem = new ItemBuilder(Material.WHITE_STAINED_GLASS_PANE).setDisplayName("&7Reward Tier").build();
@@ -79,7 +80,7 @@ public class RewardTier {
         return this.insurance;
     }
 
-    public void loadFrom(ConfigurationSection rewardTierSection) {
+    public void loadFrom(ConfigurationSection rewardTierSection) throws IOException {
         ConfigurationSection rewards = rewardTierSection.getConfigurationSection("Rewards");
         this.pityEnabled = Boolean.parseBoolean(rewardTierSection.getString("Pity", "false"));
         this.pityLimit = rewardTierSection.getInt("Pity-Limit", 0);

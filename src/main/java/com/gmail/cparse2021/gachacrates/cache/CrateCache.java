@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +31,7 @@ public class CrateCache {
         return this.crates;
     }
 
-    public void loadFrom(FileConfiguration config) {
+    public void loadFrom(FileConfiguration config) throws IOException {
         ConfigurationSection cratesSection = config.getConfigurationSection("Crates");
         if (cratesSection != null) {
             for (String crateName : cratesSection.getKeys(false)) {

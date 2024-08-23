@@ -13,6 +13,7 @@ import com.gmail.cparse2021.gachacrates.struct.reward.RewardTier;
 import com.gmail.cparse2021.gachacrates.util.ItemBuilder;
 import com.gmail.cparse2021.gachacrates.util.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -21,8 +22,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.Material;
+
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -40,7 +42,7 @@ public class CrateOpenMenu extends Menu {
     }
 
     @Override
-    public void load(@Nullable ConfigurationSection configurationSection) {
+    public void load(@Nullable ConfigurationSection configurationSection) throws IOException {
         if (configurationSection != null) {
             this.title = Utils.formatString(configurationSection.getString("Title", "&6&lPull Rewards"));
             this.countdownItem1 = Utils.decodeItem(configurationSection.getString("Countdown-Item-1", "GRAY_STAINED_GLASS_PANE name:&7Revealing_in_1s"));
@@ -50,7 +52,8 @@ public class CrateOpenMenu extends Menu {
     }
 
     @Override
-    public void open(Player player) {}
+    public void open(Player player) {
+    }
 
 
     public void open(GachaPlayer gachaPlayer, final CrateSession crateSession, int pullCount) {
@@ -76,8 +79,8 @@ public class CrateOpenMenu extends Menu {
             rewardTiers.put(i, rewardTier);
             gachaPlayer.increasePity(crate, rewardTier, 1);
             inventory.setItem(i, this.countdownItem3);
-            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F);
         }
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F);
         Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
             for (int ix = 0; ix < pullCount; ix++) {
                 inventory.setItem(ix, this.countdownItem2);
@@ -103,7 +106,7 @@ public class CrateOpenMenu extends Menu {
                     this.cancel();
                 } else if (crateSession.getOpenPhase() == CrateOpenPhase.COMPLETE) {
                     this.cancel();
-                }else {
+                } else {
                     inventory.setItem(this.counter++, rewardTier.getDisplayItem());
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.7F, 0.7F);
                 }
@@ -150,7 +153,7 @@ public class CrateOpenMenu extends Menu {
 
         if (crateSession == null) {
             this.plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
-        }  else {
+        } else {
             crateSession.setOpenPhase(CrateOpenPhase.COMPLETE);
             for (Reward reward : crateSession.getRewards()) {
                 reward.execute(player);

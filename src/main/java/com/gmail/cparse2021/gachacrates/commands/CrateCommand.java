@@ -2,17 +2,18 @@ package com.gmail.cparse2021.gachacrates.commands;
 
 import org.bukkit.command.CommandSender;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class CrateCommand {
     private final String label;
-    private String permission = null;
     private final int maxArgs;
     private final int minArgs;
-    private boolean playerOnly = false;
     private final List<String> aliases = new ArrayList<>();
+    private String permission = null;
+    private boolean playerOnly = false;
 
     public CrateCommand(String label, int minArgs, int maxArgs) {
         this.label = label;
@@ -40,6 +41,10 @@ public abstract class CrateCommand {
         return this.permission;
     }
 
+    public void setPermission(String permission) {
+        this.permission = permission;
+    }
+
     public boolean hasAlias(String str) {
         for (String alias : this.aliases) {
             if (alias.equalsIgnoreCase(str)) {
@@ -54,13 +59,9 @@ public abstract class CrateCommand {
         return this.playerOnly;
     }
 
-    public abstract void run(CommandSender var1, String[] var2);
-
-    public void setPermission(String permission) {
-        this.permission = permission;
-    }
-
     public void setPlayerOnly(boolean playerOnly) {
         this.playerOnly = playerOnly;
     }
+
+    public abstract void run(CommandSender var1, String[] var2) throws IOException;
 }

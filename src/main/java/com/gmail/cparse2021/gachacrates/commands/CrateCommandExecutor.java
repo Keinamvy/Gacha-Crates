@@ -11,7 +11,9 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CrateCommandExecutor implements CommandExecutor, TabCompleter {
     private final Set<CrateCommand> commands = new HashSet<>();
@@ -48,7 +50,11 @@ public class CrateCommandExecutor implements CommandExecutor, TabCompleter {
                     Lang.ERR_MISSING_PERM.send(sender);
                     return true;
                 } else if (newArgs.length >= command.getMinArgs() && newArgs.length <= command.getMaxArgs()) {
-                    command.run(sender, newArgs);
+                    try {
+                        command.run(sender, newArgs);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     return true;
                 } else {
                     this.sendUsage(sender);
@@ -83,24 +89,14 @@ public class CrateCommandExecutor implements CommandExecutor, TabCompleter {
     }
 
     private List<String> getCratesName() {
-        List<Crate> crates = this.plugin.getCrateCache().getCrates();
-        List<String> crateName = new ArrayList<>();
-
-        for (Crate crate : crates) {
-            crateName.add(crate.getName());
-        }
-
-        return crateName;
+        return this.plugin.getCrateCache().getCrates().stream()
+                .map(Crate::getName)
+                .collect(Collectors.toList());
     }
 
     private List<String> getOnlinePlayersName() {
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-        List<String> playersName = new ArrayList<>();
-
-        for (Player player : players) {
-            playersName.add(player.getName());
-        }
-
-        return playersName;
+        return Bukkit.getOnlinePlayers().stream()
+                .map(Player::getName)
+                .collect(Collectors.toList());
     }
 }

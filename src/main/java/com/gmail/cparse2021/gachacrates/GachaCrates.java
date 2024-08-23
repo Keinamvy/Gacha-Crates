@@ -1,6 +1,9 @@
 package com.gmail.cparse2021.gachacrates;
 
-import com.gmail.cparse2021.gachacrates.cache.*;
+import com.gmail.cparse2021.gachacrates.cache.CrateCache;
+import com.gmail.cparse2021.gachacrates.cache.GachaConfig;
+import com.gmail.cparse2021.gachacrates.cache.PlayerCache;
+import com.gmail.cparse2021.gachacrates.cache.SessionManager;
 import com.gmail.cparse2021.gachacrates.commands.*;
 import com.gmail.cparse2021.gachacrates.file.CustomFile;
 import com.gmail.cparse2021.gachacrates.file.FileManager;
@@ -17,23 +20,37 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.IOException;
+
 public class GachaCrates extends JavaPlugin {
-    private CrateCache crateCache;
-    private PlayerCache playerCache;
-    private GachaConfig gachaConfig;
     private final FileManager fileManager = new FileManager(this);
-    private MenuManager menuManager;
     private final SessionManager sessionManager = new SessionManager();
     private final CustomFile cratesFile = this.fileManager.getFile("crates");
     private final CustomFile dataFile = this.fileManager.getFile("data");
     private final CustomFile langFile = this.fileManager.getFile("lang");
     private final CustomFile menusFile = this.fileManager.getFile("menus");
+    private CrateCache crateCache;
+    private PlayerCache playerCache;
+    private GachaConfig gachaConfig;
+    private MenuManager menuManager;
 
     public void onEnable() {
-        this.registerConfig();
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            getLogger().info("Could not find PlaceholderAPI! This plugin is required.");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
+        try {
+            this.registerConfig();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         this.registerCommands();
         this.registerListeners();
-        this.registerMenus();
+        try {
+            this.registerMenus();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, this::saveData, 0L, 12000L);
     }
 
@@ -45,7 +62,9 @@ public class GachaCrates extends JavaPlugin {
         return this.crateCache;
     }
 
-    public GachaConfig getGachaConfig() {return gachaConfig;}
+    public GachaConfig getGachaConfig() {
+        return gachaConfig;
+    }
 
     public MenuManager getMenuManager() {
         return this.menuManager;
@@ -77,7 +96,7 @@ public class GachaCrates extends JavaPlugin {
         }
     }
 
-    private void registerConfig() {
+    private void registerConfig() throws IOException {
         this.saveDefaultConfig();
         this.cratesFile.saveDefaultConfig();
         this.dataFile.saveDefaultConfig();
@@ -98,7 +117,7 @@ public class GachaCrates extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new MenuListener(this), this);
     }
 
-    private void registerMenus() {
+    private void registerMenus() throws IOException {
         CrateMenu crateMenu = new CrateMenu(this);
         PullMenu pullMenu = new PullMenu(this);
         RewardsMenu rewardsMenu = new RewardsMenu(this);
@@ -111,7 +130,7 @@ public class GachaCrates extends JavaPlugin {
         this.menuManager.addMenu(crateMenu, pullMenu, rewardsMenu, crateOpenMenu);
     }
 
-    public void reload() {
+    public void reload() throws IOException {
         this.reloadConfig();
         this.fileManager.reloadAllFiles();
 

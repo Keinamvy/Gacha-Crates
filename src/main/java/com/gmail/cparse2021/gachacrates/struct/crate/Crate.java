@@ -13,16 +13,17 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
 public class Crate {
     private final LinkedHashMap<RewardTier, Double> rewardProbabilityMap = new LinkedHashMap<>();
     private final String name;
-    private UUID uuid;
-    private AnimationType animationType;
     private final Set<Location> crateLocations = new HashSet<>();
     private final HashMap<Location, Boolean> inUse = new HashMap<>();
+    private UUID uuid;
+    private AnimationType animationType;
 
     public Crate(String name) {
         this.name = name;
@@ -61,7 +62,12 @@ public class Crate {
         for (Map.Entry<RewardTier, Double> rewardProbability : rewardProbabilityMap.entrySet()) {
             RewardTier rewardTier = rewardProbability.getKey();
             count += rewardProbability.getValue();
-            if (randDouble * (1 - (gachaPlayer.getPity(this,rewardTier) * 1.16667) / 100) <= count ||
+            if (rewardTier.isInsuranceEnabled()) {
+                if (randDouble * (1 - (gachaPlayer.getPity(this, rewardTier) * 1.41) / 100) <= count ||
+                        (rewardTier.isPityEnabled() && gachaPlayer.getPity(this, rewardTier) >= rewardTier.getPityLimit() - 1)) {
+                    return rewardTier;
+                }
+            } else if (randDouble <= count ||
                     (rewardTier.isPityEnabled() && gachaPlayer.getPity(this, rewardTier) >= rewardTier.getPityLimit() - 1)) {
                 return rewardTier;
             }
@@ -122,7 +128,7 @@ public class Crate {
         return inUse.getOrDefault(location, false);
     }
 
-    public void loadFrom(ConfigurationSection config) {
+    public void loadFrom(ConfigurationSection config) throws IOException {
         ConfigurationSection rewardTiers = config.getConfigurationSection("Reward-Tiers");
 
         this.uuid = UUID.fromString(config.getString("UUID", UUID.randomUUID().toString()));
@@ -275,10 +281,10 @@ public class Crate {
                 }.runTaskTimer(plugin, 0, 7);
 
                 new BukkitRunnable() {
-                    int counter = 1;
                     final Location cloudLoc = particleStartLoc.clone().add(0, 1.5, 0);
                     final List<Location> particleLocations = MathUtil.circle(cloudLoc, 0.5, false);
                     final Particle.DustOptions dustOptions = new Particle.DustOptions(Color.SILVER, 1);
+                    int counter = 1;
 
                     @Override
                     public void run() {

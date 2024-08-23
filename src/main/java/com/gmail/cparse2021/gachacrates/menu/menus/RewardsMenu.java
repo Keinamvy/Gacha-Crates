@@ -22,6 +22,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.IOException;
 import java.util.*;
 
 public class RewardsMenu extends Menu {
@@ -43,7 +44,7 @@ public class RewardsMenu extends Menu {
     }
 
     @Override
-    public void load(ConfigurationSection configurationSection) {
+    public void load(ConfigurationSection configurationSection) throws IOException {
         if (configurationSection != null) {
             this.title = Utils.formatString(configurationSection.getString("Title"));
             this.backgroundItem = Utils.decodeItem(configurationSection.getString("Background-Item", "WHITE_STAINED_GLASS_PANE name:&7"));
@@ -151,6 +152,7 @@ public class RewardsMenu extends Menu {
                     player.closeInventory();
                     Lang.ERR_UNKNOWN.send(player);
                 } else {
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.0F, 1.0F);
                     crateMenu.get().open(player);
                 }
             } else if (e.getSlot() == 52 && Objects.requireNonNull(e.getCurrentItem()).isSimilar(this.previousPageItem)) {

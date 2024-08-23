@@ -6,6 +6,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 
 public abstract class Menu {
     private final String menuID;
@@ -18,7 +19,7 @@ public abstract class Menu {
         return this.menuID;
     }
 
-    public abstract void load(@Nullable ConfigurationSection var1);
+    public abstract void load(@Nullable ConfigurationSection var1) throws IOException;
 
     public abstract void open(Player var1);
 

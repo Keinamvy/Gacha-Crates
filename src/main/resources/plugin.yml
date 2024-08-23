@@ -3,6 +3,7 @@ description: Create unique crates that offer tiered rewards and incentivize crat
 version: ${project.version}
 api-version: "1.20"
 author: Parse
+depend: [PlaceholderAPI]
 main: com.gmail.cparse2021.gachacrates.GachaCrates
 commands:
   crate:

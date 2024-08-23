@@ -19,6 +19,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,13 +32,14 @@ public class CrateMenu extends Menu {
     private ItemStack pullItem = new ItemBuilder(Material.NETHER_STAR).setDisplayName("&e&lPull").build();
     private ItemStack rewardsItem = new ItemBuilder(Material.AMETHYST_CLUSTER).setDisplayName("&e&lRewards").build();
 
+
     public CrateMenu(GachaCrates plugin) {
         super("crate");
         this.plugin = plugin;
     }
 
     @Override
-    public void load(ConfigurationSection configurationSection) {
+    public void load(ConfigurationSection configurationSection) throws IOException {
         if (configurationSection != null) {
             this.title = Utils.formatString(configurationSection.getString("Title"));
             this.backgroundItem = Utils.decodeItem(configurationSection.getString("Background-Item", "WHITE_STAINED_GLASS_PANE name:&7"));
@@ -81,6 +83,7 @@ public class CrateMenu extends Menu {
         CrateSession crateSession = this.plugin.getSessionManager().getCrateSession(player.getUniqueId());
         Optional<Menu> pullMenu = menuManager.getMenu("pull");
         Optional<Menu> rewardsMenu = menuManager.getMenu("rewards");
+        Optional<Menu> addMenu = menuManager.getMenu("add-item-select-tier");
         if (crateSession == null) {
             player.closeInventory();
             Lang.ERR_UNKNOWN.send(player);
@@ -93,15 +96,13 @@ public class CrateMenu extends Menu {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.7F, 0.7F);
                     pullMenu.get().open(player);
                 }
-            } else {
-                if (e.getSlot() == 15) {
-                    if (rewardsMenu.isEmpty()) {
-                        player.closeInventory();
-                        return;
-                    }
-                    player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.7F, 0.7F);
-                    rewardsMenu.get().open(player);
+            } else if (e.getSlot() == 15) {
+                if (rewardsMenu.isEmpty()) {
+                    player.closeInventory();
+                    return;
                 }
+                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 0.7F, 0.7F);
+                rewardsMenu.get().open(player);
             }
         }
     }
