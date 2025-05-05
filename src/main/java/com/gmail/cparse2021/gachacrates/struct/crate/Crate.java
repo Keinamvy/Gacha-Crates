@@ -1,6 +1,5 @@
 package com.gmail.cparse2021.gachacrates.struct.crate;
 
-import com.gmail.cparse2021.gachacrates.GachaCrates;
 import com.gmail.cparse2021.gachacrates.lang.Lang;
 import com.gmail.cparse2021.gachacrates.menu.Menu;
 import com.gmail.cparse2021.gachacrates.menu.menus.CrateOpenMenu;
@@ -19,7 +18,6 @@ public class Crate {
     private final LinkedHashMap<RewardTier, Double> rewardProbabilityMap = new LinkedHashMap<>();
     private final String name;
     private final Set<Location> crateLocations = new HashSet<>();
-    private final HashMap<Location, Boolean> inUse = new HashMap<>();
     private UUID uuid;
     private AnimationType animationType;
 
@@ -122,9 +120,6 @@ public class Crate {
         return false;
     }
 
-    public boolean isCrateLocationInUse(Location location) {
-        return inUse.getOrDefault(location, false);
-    }
 
     public void loadFrom(ConfigurationSection config) {
         ConfigurationSection rewardTiers = config.getConfigurationSection("Reward-Tiers");
@@ -181,7 +176,7 @@ public class Crate {
         }
     }
 
-    public void open(GachaCrates plugin, GachaPlayer gachaPlayer, CrateSession crateSession, int pullCount, Menu menu) {
+    public void open(GachaPlayer gachaPlayer, CrateSession crateSession, int pullCount, Menu menu) {
         Crate crate = crateSession.getCrate();
 
         switch (animationType) {
@@ -218,10 +213,6 @@ public class Crate {
                 && crateLocation.getBlockY() == location.getBlockY()
                 && crateLocation.getBlockZ() == location.getBlockZ()
                 && crateLocation.getWorld() == location.getWorld());
-    }
-
-    public void setLocationInUse(Location location, boolean inUse) {
-        this.inUse.put(location, inUse);
     }
 
     /**

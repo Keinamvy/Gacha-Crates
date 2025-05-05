@@ -44,9 +44,7 @@ public class CrateListener implements Listener {
                 }
 
                 e.setCancelled(true);
-                if (crate.get().isCrateLocationInUse(clickedBlock.getLocation())) {
-                    Lang.ERR_CRATE_IN_USE.send(player);
-                } else if (crateSession.getOpenPhase() == CrateOpenPhase.OPENING) {
+                if (crateSession.getOpenPhase() == CrateOpenPhase.OPENING) {
                     Lang.ERR_OPENING_CRATE.send(player);
                 } else if (crateMenu.isEmpty()) {
                     Lang.ERR_UNKNOWN.send(player);
