@@ -5,7 +5,6 @@ import com.gmail.cparse2021.gachacrates.struct.crate.Crate;
 import com.gmail.cparse2021.gachacrates.util.ItemBuilder;
 import com.gmail.cparse2021.gachacrates.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -24,7 +23,6 @@ public class RewardTier {
     private int pityLimit = 0;
     private boolean pityEnabled = false;
     private ItemStack displayItem = new ItemBuilder(Material.WHITE_STAINED_GLASS_PANE).setDisplayName("&7Reward Tier").build();
-    private Color color = Color.SILVER;
     private boolean insurance = false;
 
     public RewardTier(String name) {
@@ -51,9 +49,6 @@ public class RewardTier {
         return this.rewardProbabilityMap.entrySet().iterator().next().getKey();
     }
 
-    public Color getColor() {
-        return this.color;
-    }
 
     public ItemStack getDisplayItem() {
         return this.displayItem;
@@ -84,7 +79,6 @@ public class RewardTier {
         this.pityEnabled = Boolean.parseBoolean(rewardTierSection.getString("Pity", "false"));
         this.pityLimit = rewardTierSection.getInt("Pity-Limit", 0);
         this.displayItem = Utils.decodeItem(rewardTierSection.getString("Display-Item", "WHITE_STAINED_GLASS_PANE name:&7" + this.name));
-        this.color = Color.fromRGB(rewardTierSection.getInt("Color.R", 255), rewardTierSection.getInt("Color.G", 255), rewardTierSection.getInt("Color.B", 255));
         this.insurance = rewardTierSection.getBoolean("Insurance", false);
         if (rewards != null) {
             for (String rewardName : rewards.getKeys(false)) {

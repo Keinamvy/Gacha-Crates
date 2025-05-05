@@ -7,11 +7,10 @@ import com.gmail.cparse2021.gachacrates.menu.menus.CrateOpenMenu;
 import com.gmail.cparse2021.gachacrates.struct.GachaPlayer;
 import com.gmail.cparse2021.gachacrates.struct.reward.Reward;
 import com.gmail.cparse2021.gachacrates.struct.reward.RewardTier;
-import com.gmail.cparse2021.gachacrates.util.MathUtil;
-import com.gmail.cparse2021.gachacrates.util.ParticleUtil;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.logging.Level;

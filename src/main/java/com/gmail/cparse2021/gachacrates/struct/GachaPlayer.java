@@ -69,17 +69,9 @@ public class GachaPlayer {
         return this.uuid;
     }
 
-    public void increasePity(Crate crate, int amt) {
+    public void increasePity(Crate crate, RewardTier rewardTier1, int amt) {
         for (RewardTier rewardTier : crate.getRewardTiers()) {
-            if (rewardTier.isPityEnabled()) {
-                this.setPity(crate, rewardTier, Math.min(this.getPity(crate, rewardTier) + amt, rewardTier.getPityLimit() - 1));
-            }
-        }
-    }
-
-    public void increasePity(Crate crate, RewardTier exception, int amt) {
-        for (RewardTier rewardTier : crate.getRewardTiers()) {
-            if (rewardTier.isPityEnabled() && rewardTier != exception) {
+            if (rewardTier.isPityEnabled() && rewardTier != rewardTier1) {
                 this.setPity(crate, rewardTier, Math.min(this.getPity(crate, rewardTier) + amt, rewardTier.getPityLimit() - 1));
             }
         }

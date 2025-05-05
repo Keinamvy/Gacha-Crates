@@ -10,10 +10,8 @@ import com.gmail.cparse2021.gachacrates.struct.crate.CrateOpenPhase;
 import com.gmail.cparse2021.gachacrates.struct.crate.CrateSession;
 import com.gmail.cparse2021.gachacrates.struct.reward.Reward;
 import com.gmail.cparse2021.gachacrates.struct.reward.RewardTier;
-import com.gmail.cparse2021.gachacrates.util.ItemBuilder;
 import com.gmail.cparse2021.gachacrates.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -48,6 +46,7 @@ public class CrateOpenMenu extends Menu {
     public void open(Player player) {
     }
 
+    @SuppressWarnings("deprecation")
     public void open(GachaPlayer gachaPlayer, final CrateSession crateSession, int pullCount) {
         int rows = Math.min(pullCount % 9 > 0 ? pullCount / 9 + 1 : pullCount / 9, 6);
         final Inventory inventory = Bukkit.createInventory(null, rows * 9, this.title);

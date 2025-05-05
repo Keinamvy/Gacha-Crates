@@ -85,6 +85,7 @@ public class Utils {
      * @return Formatted string
      * @author DMan16 on SpigotMC
      */
+    @SuppressWarnings("deprecation")
     public static String formatString(String str) {
         Pattern unicode = Pattern.compile("\\\\u\\+[a-fA-F0-9]{4}");
 

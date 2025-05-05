@@ -4,7 +4,14 @@
 # # Interface just opens a menu, physical plays an animation on the crate, and none just gives rewards immediately ##
 # #     Do not worry about changing or setting UUIDs, if one is not found, one will be automatically generated     ##
 # ###################################################################################################################
-
+# Some rule to make an item:
+# - Space are for splitting each section, if you want to
+#   have space, for example: lore, use _ (lower dash) instead
+# - To split the line, use | (vertical bar)
+# Standalone String are consider ItemType
+# Standalone integer are consider the amount of that item
+# There are several section like name, lore, enchantment
+# It doesn't matter what is your order of each section, you'll always get the right item if configured right
 Crates:
   Normal:
     Animation-Type: INTERFACE
@@ -13,11 +20,8 @@ Crates:
         Pity: false
         Pity-Limit: 0
         Chance: 45
+        #Display Item and Reward can be two differrent item, once the player click then only when they know what's the reward
         Display-Item: white_stained_glass_pane name:&7✦ lore:&7Click_to_reveal_reward
-        Color:
-          R: 184
-          G: 184
-          B: 184
         Rewards:
           Dull-Blade:
             Display-Item: iron_sword 1 name:&7Dull_Blade lore:&8✦|&7|&7&o25%_Chance
@@ -29,71 +33,28 @@ Crates:
             Chance: 25
             Items:
               - iron_sword 1 fire_aspect:1 name:&7Flaming_Blade lore:&8✦
-          Small-Obsidian-Bundle:
-            Display-Item: obsidian 32 lore:&8✦|&7|&7&o25%_Chance
-            Chance: 25
-            Items:
-              - obsidian 32 lore:&8✦
-          Cooked-Meat:
-            Display-Item: cooked_beef 64 lore:&8✦|&7|&7&o25%_Chance
-            Chance: 25
-            Items:
-              - cooked_beef 64 lore:&8✦
       two-star:
         Pity: false
         Pity-Limit: 0
         Chance: 35
         Display-Item: yellow_stained_glass_pane name:&e✦✦ lore:&7Click_to_reveal_reward
-        Color:
-          R: 255
-          G: 255
-          B: 61
         Rewards:
           Sharpened-Blade:
             Display-Item: iron_sword 1 sharpness:1 name:&7Sharpened_Blade lore:&8✦✦|&7|&7&o25%_Chance
             Chance: 25
             Items:
               - iron_sword 1 sharpness:1 name:&7Sharpened_Blade lore:&8✦✦
-          Blistering-Blade:
-            Display-Item: iron_sword 1 fire_aspect:2 name:&7Blistering_Blade lore:&8✦✦|&7|&7&o25%_Chance
-            Chance: 25
-            Items:
-              - iron_sword 1 fire_aspect:2 name:&7Blistering_Blade lore:&8✦✦
-          Obsidian-Bundle:
-            Display-Item: obsidian 64 lore:&8✦✦|&7|&7&o25%_Chance
-            Chance: 25
-            Items:
-              - obsidian 64 lore:&8✦✦
-          Skeleton-Spawner:
-            Display-Item: spawner 1 name:&eSkeleton_Spawner lore:&8✦✦|&7|&7&o25%_Chance
-            Chance: 25
-            Commands:
-              - spawner give %player% skeleton 1
       three-star:
         Pity: false
         Pity-Limit: 0
         Chance: 14.3
         Display-Item: light_blue_stained_glass_pane name:&b✦✦✦ lore:&7Click_to_reveal_reward
         Color:
-          R: 61
-          G: 255
-          B: 255
         Rewards:
-          Refined-Blade:
-            Display-Item: diamond_sword 1 sharpness:3 fire_aspect:2 name:&7Refined_Blade
-              lore:&8✦✦✦|&7|&7&o33.33%_Chance
-            Chance: 33.33
-            Items:
-              - diamond_sword 1 sharpness:3 fire_aspect:2 name:&7Refined_Blade lore:&8✦✦✦
-          Refined-Pickaxe:
-            Display-Item: diamond_pickaxe 1 efficiency:3 unbreaking:2 name:&7Refined_Pickaxe
-              lore:&8✦✦✦|&7|&7&o33.33%_Chance
-            Chance: 33.33
-            Items:
-              - diamond_pickaxe 1 efficiency:3 unbreaking:2 name:&7Refined_Pickaxe lore:&8✦✦✦
           IG-Spawner:
             Display-Item: spawner 1 name:&eIron_Golem_Spawner lore:&8✦✦✦|&7|&7&o33.34%_Chance
             Chance: 33.34
+            #You can use command
             Commands:
               - spawner give %player% iron_golem 1
       four-star:
@@ -101,10 +62,6 @@ Crates:
         Pity-Limit: 10
         Chance: 5.1
         Display-Item: pink_stained_glass_pane name:&d✦✦✦✦ lore:&7Click_to_reveal_reward
-        Color:
-          R: 255
-          G: 61
-          B: 255
         Rewards:
           Masters-Blade:
             Display-Item: diamond_sword 1 sharpness:5 fire_aspect:2 unbreaking:3 name:&eMaster's_Blade
@@ -126,10 +83,6 @@ Crates:
         Insurance: true
         Chance: 0.6
         Display-Item: red_stained_glass_pane name:&c✦✦✦✦✦ lore:&7Click_to_reveal_reward
-        Color:
-          R: 255
-          G: 61
-          B: 61
         Rewards:
           Masters-Set:
             Display-Item: DIAMOND_SWORD 1 sharpness:5 fire_aspect:2 unbreaking:3 looting:3
