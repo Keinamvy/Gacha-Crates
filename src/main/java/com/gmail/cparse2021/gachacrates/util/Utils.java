@@ -1,13 +1,11 @@
 package com.gmail.cparse2021.gachacrates.util;
 
-import com.gmail.cparse2021.gachacrates.struct.reward.ItemCoder;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,11 +15,7 @@ import java.util.regex.Pattern;
 
 public class Utils {
 
-    public static ItemStack decodeItem(String str) throws IOException {
-        String[] base64 = str.split(":");
-        if (base64[0].equalsIgnoreCase("base64")) {
-            return new ItemBuilder(ItemCoder.itemStackFromBase64(base64[1])).build();
-        }
+    public static ItemStack decodeItem(String str) {
         String[] args = str.split(" ");
         Material material = Material.ACACIA_BOAT;
         String name = null;

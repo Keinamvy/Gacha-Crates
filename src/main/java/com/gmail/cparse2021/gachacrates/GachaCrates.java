@@ -39,11 +39,7 @@ public class GachaCrates extends JavaPlugin {
             getLogger().info("Could not find PlaceholderAPI! This plugin is required.");
             Bukkit.getPluginManager().disablePlugin(this);
         }
-        try {
-            this.registerConfig();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        this.registerConfig();
         this.registerCommands();
         this.registerListeners();
         try {
@@ -96,7 +92,7 @@ public class GachaCrates extends JavaPlugin {
         }
     }
 
-    private void registerConfig() throws IOException {
+    private void registerConfig() {
         this.saveDefaultConfig();
         this.cratesFile.saveDefaultConfig();
         this.dataFile.saveDefaultConfig();

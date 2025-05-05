@@ -13,7 +13,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -128,7 +127,7 @@ public class Crate {
         return inUse.getOrDefault(location, false);
     }
 
-    public void loadFrom(ConfigurationSection config) throws IOException {
+    public void loadFrom(ConfigurationSection config) {
         ConfigurationSection rewardTiers = config.getConfigurationSection("Reward-Tiers");
 
         this.uuid = UUID.fromString(config.getString("UUID", UUID.randomUUID().toString()));

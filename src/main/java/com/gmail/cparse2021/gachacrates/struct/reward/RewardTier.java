@@ -10,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,7 +79,7 @@ public class RewardTier {
         return this.insurance;
     }
 
-    public void loadFrom(ConfigurationSection rewardTierSection) throws IOException {
+    public void loadFrom(ConfigurationSection rewardTierSection) {
         ConfigurationSection rewards = rewardTierSection.getConfigurationSection("Rewards");
         this.pityEnabled = Boolean.parseBoolean(rewardTierSection.getString("Pity", "false"));
         this.pityLimit = rewardTierSection.getInt("Pity-Limit", 0);
