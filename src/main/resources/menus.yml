@@ -5,6 +5,9 @@ Crate-Menu:
   Rewards-Menu-Item: AMETHYST_CLUSTER name:&2Rewards lore:&7Click_to_view_rewards_and_your_pity_tracker
 Crate-Open-Menu:
   Title: '&2&lPull Rewards'
+  Countdown-Item-1: GRAY_STAINED_GLASS_PANE name:&7Revealing_in_1s
+  Countdown-Item-2: YELLOW_STAINED_GLASS_PANE name:&7Revealing_in_2s
+  Countdown-Item-3: ORANGE_STAINED_GLASS_PANE name:&7Revealing_in_3s
 Pull-Menu:
   Title: '&2&lPull Menu'
   Background-Item: LIGHT_GRAY_STAINED_GLASS_PANE name:&7
