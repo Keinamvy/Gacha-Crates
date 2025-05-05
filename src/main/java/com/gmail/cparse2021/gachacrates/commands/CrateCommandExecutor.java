@@ -23,9 +23,6 @@ public class CrateCommandExecutor implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
     }
 
-    public void addCommand(CrateCommand crateCommand) {
-        this.commands.add(crateCommand);
-    }
 
     public void addCommands(CrateCommand... crateCommands) {
         this.commands.addAll(Arrays.asList(crateCommands));

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+@SuppressWarnings("deprecation")
 public class ItemBuilder {
     private final ItemStack itemStack;
 
@@ -23,11 +24,6 @@ public class ItemBuilder {
 
     public ItemStack build() {
         return this.itemStack;
-    }
-
-    public ItemBuilder addEnchantment(Enchantment enchantment, int level) {
-        this.itemStack.addUnsafeEnchantment(enchantment, level - 1);
-        return this;
     }
 
     public ItemBuilder addEnchantments(HashMap<Enchantment, Integer> enchantments) {

@@ -21,20 +21,12 @@ public class CrateSession {
         this.crateLocation = crateLocation;
     }
 
-    public void clearRewards() {
-        this.rewards.clear();
-    }
-
     public Crate getCrate() {
         return this.crate;
     }
 
     public void setCrate(Crate crate) {
         this.crate = crate;
-    }
-
-    public Location getCrateLocation() {
-        return this.crateLocation;
     }
 
     public void setCrateLocation(Location crateLocation) {

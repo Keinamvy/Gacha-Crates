@@ -4,7 +4,6 @@ import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class CrateCommand {
@@ -19,10 +18,6 @@ public abstract class CrateCommand {
         this.label = label;
         this.minArgs = minArgs;
         this.maxArgs = maxArgs;
-    }
-
-    public void addAliases(String... aliases) {
-        this.aliases.addAll(Arrays.asList(aliases));
     }
 
     public String getLabel() {

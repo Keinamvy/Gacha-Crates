@@ -33,7 +33,4 @@ public class FileManager {
         this.fileHashMap.values().forEach(CustomFile::reloadConfig);
     }
 
-    public void saveAllFiles() {
-        this.fileHashMap.values().forEach(CustomFile::saveConfig);
-    }
 }

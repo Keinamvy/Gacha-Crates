@@ -30,23 +30,6 @@ public class Crate {
     }
 
     /**
-     * Generate a random reward tier based on set probability
-     *
-     * @return Generated RewardTier
-     */
-    public RewardTier generateRewardTier() {
-        double randDouble = Math.random();
-
-        for (Map.Entry<RewardTier, Double> rewardProbability : rewardProbabilityMap.entrySet()) {
-            if (randDouble <= rewardProbability.getValue()) {
-                return rewardProbability.getKey();
-            }
-        }
-
-        return rewardProbabilityMap.entrySet().iterator().next().getKey();
-    }
-
-    /**
      * Generate a random reward tier based on set probability and pity for a player
      *
      * @return Generated RewardTier
@@ -77,10 +60,6 @@ public class Crate {
 
         getRewardTiers().forEach((r) -> rewards.addAll(r.getRewards()));
         return rewards;
-    }
-
-    public AnimationType getAnimationType() {
-        return animationType;
     }
 
     public double getChance(RewardTier rewardTier) {

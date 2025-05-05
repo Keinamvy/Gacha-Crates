@@ -19,7 +19,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,7 +44,7 @@ public class PullMenu extends Menu {
     }
 
     @Override
-    public void load(ConfigurationSection configurationSection) throws IOException {
+    public void load(ConfigurationSection configurationSection) {
         if (configurationSection != null) {
             this.title = Utils.formatString(configurationSection.getString("Title"));
             this.backgroundItem = Utils.decodeItem(configurationSection.getString("Background-Item", "WHITE_STAINED_GLASS_PANE name:&7"));
@@ -81,6 +80,7 @@ public class PullMenu extends Menu {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void open(Player player) {
         Inventory inventory = Bukkit.createInventory(null, 27, this.title);
 
@@ -177,7 +177,7 @@ public class PullMenu extends Menu {
                         player.closeInventory();
                         gachaPlayer.setAvailablePulls(crateSession.getCrate(), gachaPlayer.getAvailablePulls(crateSession.getCrate()) - pullCount);
                         this.plugin.getMenuManager().clearActiveMenu(player.getUniqueId());
-                        crateSession.getCrate().open(this.plugin, gachaPlayer, crateSession, pullCount, crateOpenMenu.get());
+                        crateSession.getCrate().open(gachaPlayer, crateSession, pullCount, crateOpenMenu.get());
                     }
                 }
             }

@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 
 public enum Lang {
     ERR_ALREADY_CRATE("err-already-crate", "A crate already exists here", LangType.NORMAL),
-    ERR_CRATE_IN_USE("err-crate-in-use", "This crate is already being opened, try again later", LangType.NORMAL),
     ERR_INVALID_AMOUNT("err-invalid-amount", "%arg% must be a number above 0", LangType.NORMAL),
     ERR_NO_BLOCK("err-no-block", "Unable to fin a target block", LangType.NORMAL),
     ERR_NO_CRATE_FOUND("err-no-crate-found", "No crate was found here", LangType.NORMAL),

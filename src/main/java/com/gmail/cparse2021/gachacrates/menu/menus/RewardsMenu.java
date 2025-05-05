@@ -22,7 +22,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.io.IOException;
 import java.util.*;
 
 public class RewardsMenu extends Menu {
@@ -44,7 +43,7 @@ public class RewardsMenu extends Menu {
     }
 
     @Override
-    public void load(ConfigurationSection configurationSection) throws IOException {
+    public void load(ConfigurationSection configurationSection) {
         if (configurationSection != null) {
             this.title = Utils.formatString(configurationSection.getString("Title"));
             this.backgroundItem = Utils.decodeItem(configurationSection.getString("Background-Item", "WHITE_STAINED_GLASS_PANE name:&7"));
